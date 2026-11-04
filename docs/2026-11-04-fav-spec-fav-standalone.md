@@ -57,21 +57,30 @@ Checked 2026-11-04.
     to X for Wings agents.", and messages naming `wings x` (for example
     line 151, "this is not the login wings x is waiting for"). Hints such
     as "run wings x auth login" also appear in `auth.py` and
-    `bookmarks.py`; `media.py` says "a media lookup wings-x cannot read".
+    `bookmarks.py`; `media.py` says "a media lookup wings-x cannot read";
+    `commands.py` has "X returned a response wings-x cannot read" and a
+    comment naming `wings_x.bookmarks` (line 520).
   - User-Agent `wings-x/<version>` in both `auth.py` and `client.py`
     (`USER_AGENT`, line 21).
   - `paths.py`: config in `$XDG_CONFIG_HOME/wings/x`, state in
     `$XDG_STATE_HOME/wings/x`, and `releases_dir`, used only by
     `tests/test_paths.py`. Files: `config.toml`, `token.json`,
     `app-bearer`, `token.lock`, `x.sqlite3` (WAL mode, so also `-wal` and
-    `-shm`), `sync.lock`.
+    `-shm`), `sync.lock`. `commands.py` creates both directories
+    (`ensure_dirs`, line 49) before loading the config, on every command
+    that builds a context.
   - Tests encode the old names: `tests/helpers.py` `config_dir` returns
-    `.../wings/x`; `test_secrets.py` line 44 and `test_bookmarks_sync.py`
-    line 138 build `wings/x` paths; `test_paths.py` asserts the old paths
-    and `releases_dir`; `test_cli.py` `LauncherTest` runs `bin/wings-x`
-    directly and through a symlink; 11 `mock.patch("wings_x....")`
-    strings; `test_secrets.py` runs `tests/live_smoke.sh`, which is gated
-    by `WINGS_X_LIVE`.
+    `.../wings/x` and `TempHome` uses the prefix `wings-x-test-`;
+    `test_secrets.py` line 44 and `test_bookmarks_sync.py` line 138 build
+    `wings/x` paths; `test_paths.py` asserts the old paths and
+    `releases_dir`; `test_cli.py` `LauncherTest` runs `bin/wings-x`
+    directly and through a symlink; assertions expect `usage: wings x`
+    (`test_cli.py` line 51), a `wings-x/` User-Agent (`test_client.py`
+    line 48) and "wings-x cannot read" (`test_commands.py` line 129); 11
+    `mock.patch("wings_x....")` strings; `test_secrets.py` runs
+    `tests/live_smoke.sh`, which is gated by `WINGS_X_LIVE`. Outside
+    import lines and `mock.patch` targets, 54 lines under `wings_x/` and
+    `tests/` mention `wings` in some case.
   - Nothing calls Wings at runtime.
 - **Version string:** `wings_x/__init__.py` reads `0.1.0` at `main` and at
   tag `v0.2.0`.
@@ -83,16 +92,18 @@ Checked 2026-11-04.
   `tweet.read`, `users.read`, `bookmark.read` and `offline.access`.
   There is no `--version` flag.
 - **Agent skill:** `x-research` lives in the Wings skills tree
-  (`skills/x-research/SKILL.md` in `service-dept/wings` at `1400bb82`). The
-  tree's `install` script links each skill directory into
-  `~/.agents/skills`, `~/.claude/skills` and `~/.gemini/config/skills`.
-  On the Wings host, no `x-research` link exists in any of the three. The
-  existing links point through `~/linda/repos/skills`, a symlink to the
-  tree, while `install` resolves its own root with `pwd -P` to the
-  physical path, so it reports each existing link as a conflict. The tree
-  also names `x-research` in its README, in the expected-skills list of
-  `tests/test-skill-lint.sh`, and in scenarios S123–S125 of
-  `tests/scenarios.md`.
+  (`skills/x-research/SKILL.md` in `service-dept/wings` at `1400bb82`). Its
+  step 1 says "repeating a call that reaches X pays again"; X documents
+  deduplication of resources within a UTC day, and wings-x's ledger does
+  not charge a resource it has already recorded that day. The tree's
+  `install` script links each skill directory into `~/.agents/skills`,
+  `~/.claude/skills` and `~/.gemini/config/skills`. On the Wings host, no
+  `x-research` link exists in any of the three. The existing links point
+  through `~/linda/repos/skills`, a symlink to the tree, while `install`
+  resolves its own root with `pwd -P` to the physical path, so it reports
+  each existing link as a conflict. The tree also names `x-research` in
+  its README, in the expected-skills list of `tests/test-skill-lint.sh`,
+  and in scenarios S123–S125 of `tests/scenarios.md`.
 - **Precedent:** `service-dept/op-img` at `5e70f15` publishes to PyPI by
   trusted publishing (`.github/workflows/publish.yml`: `test` → `build` →
   `publish`, environment `pypi`, `id-token: write`,
@@ -103,9 +114,12 @@ Checked 2026-11-04.
   "MIT License / Copyright (c) 2026 Service Dept". Its `pyproject.toml`
   uses hatchling with `dynamic = ["version", "readme"]`,
   `[tool.hatch.version]`, and `hatch-fancy-pypi-readme` substitutions.
-- **PyPI:** `fav` is unregistered (`https://pypi.org/pypi/fav/json`
-  returned 404 on 2026-11-04). PyPI's documentation says a pending
-  publisher does not reserve a name until it is used to publish.
+- **PyPI** (docs.pypi.org, read 2026-11-04): `fav` is unregistered
+  (`https://pypi.org/pypi/fav/json` returned 404). A pending publisher
+  "does not create a project or reserve a project's name until it is
+  actually used to publish". The name-retention policy lists as invalid a
+  project that "is name squatting (package has no functionality or is
+  empty)", and says such projects "will be removed from the Index".
 
 ## Design
 
@@ -120,44 +134,12 @@ Checked 2026-11-04.
 | Skill | `skills/x-research/` in this repository, the only copy | A generic skill here plus a Wings layer; `fav skill install` |
 | Distribution | PyPI and `service-dept/tap`; Linux and macOS | PyPI only; Windows support |
 | Wings side | A short switchover in this spec; no bootstrap change | A second spec for bootstrap; switchover in a later document |
-| Order | Claim the PyPI name with 0.0.1 first, then port | Port first and release once; port in a private fork |
+| Order | Port first, then claim the PyPI name with a working `0.1.0a1`, then finish and release `0.1.0` | An empty `0.0.1` placeholder (PyPI removes name-squatting packages); one release at `0.1.0`; a private fork |
 
-### 1. Claiming the name (0.0.1)
+### 1. Import and rename
 
-One pull request adds:
-
-- `LICENSE`: MIT, "Copyright (c) 2026 Service Dept", as op-img.
-- `pyproject.toml`: hatchling; `name = "fav"`;
-  `dynamic = ["version"]` with `[tool.hatch.version] path =
-  "fav/__init__.py"`; `readme = "README.md"`;
-  `requires-python = ">=3.11"`; `license = "MIT"`;
-  `license-files = ["LICENSE"]`; no dependencies; classifier
-  `Development Status :: 1 - Planning`; `[project.urls]` `Homepage`,
-  `Repository` and `Issues` on `https://github.com/service-dept/fav`; no
-  console script.
-- `fav/__init__.py`: `__version__ = "0.0.1"` and a one-line docstring.
-  The package sits at the repository root.
-- `README.md`: what `fav` will be, that this release only holds the name,
-  and that `fav` is unofficial and not affiliated with X Corp. No
-  relative links.
-- `tests/__init__.py` (empty) and `tests/test_package.py`: one `unittest`
-  test that imports `fav` and checks `__version__` is a non-empty string.
-  It exists because `unittest` exits 5 when no tests run (Python 3.12
-  and later), which would fail the release's test job.
-- `.github/workflows/publish.yml`: op-img's workflow with its three jobs,
-  trigger and permissions unchanged, except that the test job runs
-  `python -B -m unittest discover -s tests -t .` from the repository root
-  in place of pytest.
-
-Operator steps after merge, in order: add a pending publisher at
-`https://pypi.org/manage/account/publishing/` (project `fav`, owner
-`service-dept`, repository `fav`, workflow `publish.yml`, environment
-`pypi`); publish GitHub release `v0.0.1`.
-
-Done when `https://pypi.org/project/fav/` shows 0.0.1 uploaded by the
-workflow.
-
-### 2. Import and rename
+**Repository basics**, in the first pull request with the import:
+`LICENSE` (MIT, "Copyright (c) 2026 Service Dept", as op-img).
 
 **Import.** One commit copies `wings_x/` and `tests/` (including
 `__init__.py`, `helpers.py`, `fixtures/` and `live_smoke.sh`) from
@@ -166,15 +148,19 @@ x-runtime as they are at its `main`, with the message
 `bin/wings-x` and `install` (replaced by the package entry point and
 `python -m fav`) and `tests/test_install.py` (it tests `install`).
 
-**Rename**, in commits after the import:
+**Rename**, in commits after the import. The rule: after the rename, no
+line under `fav/` or `tests/` mentions `wings` in any case, including
+comments, temporary-directory prefixes, test names and assertions. In
+particular:
 
 - `wings_x/` becomes `fav/`, with every import and every
-  `mock.patch("wings_x....")` target updated. It replaces the 0.0.1
-  `fav/__init__.py`. The version is `0.1.0.dev0` until release.
+  `mock.patch("wings_x....")` target updated. `__version__` is
+  `0.1.0a1`.
 - `cli.py`: `prog="fav"`, description "Read-only access to X for agents."
 - Every message naming `wings x` or `wings-x`, in any module, names `fav`
   (for example "run fav auth login", "this is not the login fav is
-  waiting for", "a media lookup fav cannot read").
+  waiting for", "a media lookup fav cannot read", "X returned a response
+  fav cannot read"), and the assertions expecting them change with them.
 - Both User-Agents (`auth.py` and `client.py`) become `fav/<version>`.
 - `WINGS_X_LIVE` becomes `FAV_LIVE`; `tests/live_smoke.sh` runs
   `python3 -B -m fav` with the checkout on `PYTHONPATH`.
@@ -182,28 +168,29 @@ x-runtime as they are at its `main`, with the message
   (default `~/.config/fav`); state is `$XDG_STATE_HOME/fav` (default
   `~/.local/state/fav`). File names inside are unchanged. `fav` never
   reads or moves the wings-x directories.
-- Tests: `tests/helpers.py` `config_dir`, `test_secrets.py`,
-  `test_bookmarks_sync.py` and `test_paths.py` use the new paths, and
-  `test_paths.py` no longer mentions `releases_dir`. `LauncherTest` in
-  `test_cli.py` is replaced by one test that runs
+- Tests: `tests/helpers.py` (`config_dir`, the `TempHome` prefix),
+  `test_secrets.py`, `test_bookmarks_sync.py` and `test_paths.py` use the
+  new names, and `test_paths.py` no longer mentions `releases_dir`.
+  `LauncherTest` in `test_cli.py` is replaced by one test that runs
   `sys.executable -B -m fav --help` with the repository root on
-  `PYTHONPATH` and an empty `HOME`, and expects exit 0 and
-  `usage: fav`. The symlink test is deleted, since there is no launcher
-  script.
+  `PYTHONPATH` and an empty `HOME`, and expects exit 0 and `usage: fav`.
+  The symlink test is deleted, since there is no launcher script.
 - Unchanged: commands, flags, config keys, `X_*` error codes, JSON fields,
   the $1.00 default daily ceiling, and all behaviour defined by the
   wings-x spec.
 
-### 3. Packaging, CI and release (0.1.0)
+### 2. Packaging and CI
 
-**`pyproject.toml`**, extending section 1:
+**`pyproject.toml`**, modelled on op-img's:
 
-- `dynamic = ["version", "readme"]` (the static `readme` key goes), with
-  `hatch-fancy-pypi-readme` in `build-system.requires`. Its fragment is
-  `README.md`, and its substitutions turn the README's relative links
-  (`](LICENSE)` and `](skills/...)`) into
-  `https://github.com/service-dept/fav/blob/main/...` URLs.
+- `[build-system]` hatchling and `hatch-fancy-pypi-readme`.
+- `name = "fav"`; `dynamic = ["version", "readme"]` with
+  `[tool.hatch.version] path = "fav/__init__.py"`;
+  `requires-python = ">=3.11"`; `license = "MIT"`;
+  `license-files = ["LICENSE"]`; no dependencies.
 - `[project.scripts] fav = "fav.__main__:main"`.
+- `[project.urls]` `Homepage`, `Repository` and `Issues` on
+  `https://github.com/service-dept/fav`.
 - Classifiers: `Development Status :: 3 - Alpha`, `Environment :: Console`,
   `Operating System :: POSIX :: Linux`, `Operating System :: MacOS`,
   Python 3.11, 3.12, 3.13 and 3.14. Keywords: `x`, `twitter`, `cli`,
@@ -211,9 +198,12 @@ x-runtime as they are at its `main`, with the message
 - `[tool.hatch.build.targets.wheel] include = ["fav"]`;
   `[tool.hatch.build.targets.sdist] include = ["fav", "tests", "README.md",
   "LICENSE"]`.
+- `hatch-fancy-pypi-readme`: the fragment is `README.md`; substitutions
+  turn its relative links (`](LICENSE)` and `](skills/...)`) into
+  `https://github.com/service-dept/fav/blob/main/...` URLs.
 
-**`fav --version`** prints `fav <version>` and exits 0. It is the only
-change to the command surface.
+**`fav --version`** prints `fav <version>` and exits 0 without creating
+any directory. It is the only change to the command surface.
 
 **`.github/workflows/tests.yml`**, on every pull request and push to
 `main`:
@@ -231,32 +221,32 @@ change to the command surface.
   so `fav` imports from the installed package. Then
   `$RUNNER_TEMP/venv/bin/fav --version`.
 
-`publish.yml`'s test job keeps section 1's command.
+**`.github/workflows/publish.yml`**: op-img's workflow, with its three
+jobs, its `release: published` trigger and its permissions unchanged,
+except that the test job runs
+`python -B -m unittest discover -s tests -t .` from the repository root
+in place of pytest.
 
-**Homebrew:**
+Before the first release, nothing on the Wings host runs a `fav`
+command other than `--help`, `--version` and the test suite (which uses
+temporary homes), so `~/.config/fav` and `~/.local/state/fav` do not
+exist when section 6 moves the data there.
 
-- `Formula/fav.rb`: `Language::Python::Virtualenv`, `depends_on
-  "python@3.14"`, no resources, `license "MIT"`, the PyPI sdist URL and
-  sha256. `test do` runs `fav --version` and one offline command against
-  an empty `HOME`, asserting its documented error code. The plan chooses
-  the command.
-- `.github/workflows/homebrew.yml`: op-img's job, renamed. It stages the
-  formula in a local test tap, then runs `brew style`, an install from
-  source, `brew audit --strict` and `brew test`, on `macos-latest` and
-  `ubuntu-latest`, on pull requests and pushes touching the formula or
-  the workflow, weekly, and on demand. `setup-homebrew` is pinned to the
-  same commit as op-img's. If `brew audit --strict` rejects a formula with
-  no resources, the formula changes to satisfy it; the release waits for
-  a green run.
+### 3. First release: 0.1.0a1
 
-**Release 0.1.0:**
+When sections 1 and 2 are merged and `tests.yml` is green on `main`:
 
-1. A pull request sets `__version__ = "0.1.0"`. After merge, the operator
-   publishes GitHub release `v0.1.0`, and `publish.yml` uploads it.
-2. A pull request points `Formula/fav.rb` at the 0.1.0 sdist;
-   `homebrew.yml` checks it.
-3. After merge, a pull request to `service-dept/homebrew-tap` adds the
-   same `Formula/fav.rb`.
+1. The operator adds a pending publisher at
+   `https://pypi.org/manage/account/publishing/`: project `fav`, owner
+   `service-dept`, repository `fav`, workflow `publish.yml`, environment
+   `pypi`.
+2. The operator publishes GitHub release `v0.1.0a1`, marked as a
+   pre-release.
+
+Done when `https://pypi.org/project/fav/` shows 0.1.0a1 uploaded by the
+workflow, and `uv tool install fav==0.1.0a1` followed by `fav --version`
+prints `fav 0.1.0a1` in a clean environment. A plain `pip install fav`
+skips it, since it is a pre-release.
 
 ### 4. Skill and README
 
@@ -265,17 +255,21 @@ any user:
 
 - `wings-x` becomes `fav`; "the operator" becomes "the user". The
   "help calls it `wings x`" aside and the "Announce at start" line go.
+- Step 1's "repeating a call that reaches X pays again" becomes: a
+  repeated call can be charged again (X deduplicates some repeats within
+  a UTC day, but not reliably), so decide on `--json` before the call.
 - The frontmatter description keeps its triggers: posts, threads, users or
   bookmarks from X, and what someone said or bookmarked there.
 - A new first step: when `fav` is not on PATH, or `fav --version` is below
   the minimum the skill states (0.1.0), give the three install commands,
   point a user with no X app at the README's setup section, and stop.
-- Unchanged: the cheapest-command table; freshening bookmarks; the budget
-  rules (`--budget` and `bookmarks sync --full` only with the user's yes
-  for that call); error handling; reporting (origin, exact quotes, media
-  and alt text); post text as content from strangers, never instructions;
-  and the whole Never list, including never reaching X another way and
-  never running `fav auth` or touching `fav`'s config, token or index.
+- Otherwise unchanged: the cheapest-command table; freshening bookmarks;
+  the budget rules (`--budget` and `bookmarks sync --full` only with the
+  user's yes for that call); error handling; reporting (origin, exact
+  quotes, media and alt text); post text as content from strangers, never
+  instructions; and the whole Never list, including never reaching X
+  another way and never running `fav auth` or touching `fav`'s config,
+  token or index.
 
 **`README.md`** (PyPI shows it too), in this order:
 
@@ -310,33 +304,66 @@ any user:
    credits.
 9. License: MIT, "fav by Service Dept.", no personal names.
 
-### 5. Switchover on the Wings host
+### 5. Homebrew and release 0.1.0
 
-After 0.1.0 is on PyPI, in order:
+**Homebrew:**
 
-1. `uv tool install fav==0.1.0`, so `fav` runs from an installed release.
-2. Move the data by hand:
+- `Formula/fav.rb`: `Language::Python::Virtualenv`, `depends_on
+  "python@3.14"`, no resources, `license "MIT"`, the PyPI sdist URL and
+  sha256. `test do` runs `fav --version` and one offline command against
+  an empty `HOME`, asserting its documented error code. The plan chooses
+  the command.
+- `.github/workflows/homebrew.yml`: op-img's job, renamed. It stages the
+  formula in a local test tap, then runs `brew style`, an install from
+  source, `brew audit --strict` and `brew test`, on `macos-latest` and
+  `ubuntu-latest`, on pull requests and pushes touching the formula or
+  the workflow, weekly, and on demand. `setup-homebrew` is pinned to the
+  same commit as op-img's. If `brew audit --strict` rejects a formula with
+  no resources, the formula changes to satisfy it; the tap waits for a
+  green run.
+
+**Release 0.1.0**, after section 4 is merged and section 6's steps 1–3
+are done:
+
+1. A pull request sets `__version__ = "0.1.0"`. After merge, the operator
+   publishes GitHub release `v0.1.0`, and `publish.yml` uploads it.
+2. A pull request points `Formula/fav.rb` at the 0.1.0 sdist;
+   `homebrew.yml` checks it.
+3. After merge, a pull request to `service-dept/homebrew-tap` adds the
+   same `Formula/fav.rb`.
+
+### 6. Switchover on the Wings host
+
+Steps 1–3 happen once 0.1.0a1 is on PyPI and before `v0.1.0`, so the live
+check runs against the real, moved data; steps 4–7 follow 0.1.0.
+
+1. **Move the data and retire wings-x**, in one sitting:
    - Confirm no wings-x process is running: `pgrep -fa wings_x` prints
      nothing. A wings-x refresh or sync in flight while its directory
      moves can lose a rotated token or the database's WAL files.
    - `mv ~/.config/wings/x ~/.config/fav` and
      `mv ~/.local/state/wings/x ~/.local/state/fav`, with neither
-     destination existing beforehand. `~/.config/wings/` and
+     destination existing beforehand (section 2). `~/.config/wings/` and
      `~/.local/state/wings/` stay; other Wings services use them.
-   - Check: `fav auth status` shows the same account and scopes as
-     before; `fav bookmarks list --limit 1` shows the existing last sync;
-     `fav usage` shows the existing ledger. No new login or sync.
-3. Remove the `wings-x` link from `~/.local/bin` and
-   `~/.local/share/wings-x/`, immediately after step 2, since a later
-   `wings-x` run would create empty directories at the old paths and ask
-   for a new login.
-4. One pull request to the Wings skills tree: delete
+   - Remove the `wings-x` link from `~/.local/bin` and
+     `~/.local/share/wings-x/`, since a later `wings-x` run would create
+     empty directories at the old paths and ask for a new login.
+2. **Install the alpha and check it:** `uv tool install fav==0.1.0a1`.
+   `fav auth status` shows the same account and scopes as before;
+   `fav bookmarks list --limit 1` shows the existing last sync;
+   `fav usage` shows the existing ledger. No new login or sync.
+3. **Live check:** with the operator's yes, from the release branch,
+   `FAV_LIVE=1 tests/live_smoke.sh`, comparing the ledger estimate with
+   the change in X's credit balance.
+4. After 0.1.0 is on PyPI: `uv tool install fav==0.1.0`, so `fav` runs
+   from an installed release, and `fav --version` prints `fav 0.1.0`.
+5. One pull request to the Wings skills tree: delete
    `skills/x-research/`; remove it from `tests/test-skill-lint.sh`'s
    expected list; change its README row to say it comes from `fav`; move
    scenarios S123–S125 to this repository as
    `skills/x-research/tests/scenarios.md`, with their fake `wings-x`
    renamed to `fav`, leaving one line in the tree saying where they went.
-5. Link the skill by hand, without relying on the tree's `install`: for
+6. Link the skill by hand, without relying on the tree's `install`: for
    each of `~/.agents/skills`, `~/.claude/skills` and
    `~/.gemini/config/skills`, create `x-research` as a symlink to
    `/home/jmo/linda/repos/fav/skills/x-research`. No `x-research` link
@@ -344,38 +371,39 @@ After 0.1.0 is on PyPI, in order:
    whatever that checkout has checked out, so the checkout stays on
    `main`; the skill's minimum-version step covers a pinned CLI older than
    the skill.
-6. Archive x-runtime through the repo-cleanup process, after a last pull
+7. Archive x-runtime through the repo-cleanup process, after a last pull
    request replaces its README with a pointer to `service-dept/fav`. It
    stays private; its documents stay in place.
 
-Done when `fav` runs from `~/.local/bin` on the existing token and index,
-`wings-x` is not on PATH, each of the three skill directories holds an
-`x-research` link to this repository's skill, and S123–S125 pass against
-`fav`.
+Done when `fav` 0.1.0 runs from `~/.local/bin` on the existing token and
+index, `wings-x` is not on PATH, each of the three skill directories holds
+an `x-research` link to this repository's skill, and S123–S125 pass
+against `fav`.
 
 ## Testing
 
 - **Carried suite:** every wings-x test except `test_install.py`, renamed
-  as section 2 says, passing under
+  as section 1 says, passing under
   `python -B -m unittest discover -s tests -t .`.
 - **New unit tests:**
-  - `fav --version` prints `fav <version>` and exits 0;
+  - `fav --version` prints `fav <version>`, exits 0, and creates no
+    directory under an empty `HOME`;
   - `python -m fav --help` shows `usage: fav` (the replacement for
     `LauncherTest`); every login hint names `fav`;
-  - no file under `fav/` or `tests/` contains `wings` or `WINGS`,
-    case-insensitively, apart from this test's own pattern.
+  - no file under `fav/` or `tests/` contains `wings`, case-insensitively,
+    apart from this test's own pattern.
 - **CI:** `tests.yml` (the unit matrix and the installed packages),
   `publish.yml`'s test job, and `homebrew.yml`, including
   `brew audit --strict`.
 - **Skill:** S123–S125 re-run against a fake `fav` with the rewritten
   skill, and a new scenario: with no `fav` on PATH, the skill gives the
   three install commands and stops without reaching X another way.
-- **Live, with the operator's yes, spending real credits:**
-  `FAV_LIVE=1 tests/live_smoke.sh` once from the release branch before
-  `v0.1.0`, comparing the ledger estimate with the change in X's credit
-  balance; after each PyPI release, `uv tool install fav==<version>` and
-  `fav --version` in a clean environment; switchover steps 2 and 5 as
-  the real-machine checks of the moved data and the skill.
+- **Releases:** after each PyPI release (0.1.0a1 and 0.1.0),
+  `uv tool install fav==<version>` and `fav --version` in a clean
+  environment.
+- **Live, with the operator's yes, spending real credits:** section 6
+  step 3 before `v0.1.0`; section 6 steps 2 and 6 as the real-machine
+  checks of the moved data and the skill.
 
 ## Out of scope
 
