@@ -337,21 +337,26 @@ are done:
 Steps 1–3 happen once 0.1.0a1 is on PyPI and before `v0.1.0`, so the live
 check runs against the real, moved data; steps 4–7 follow 0.1.0.
 
-1. **Move the data and retire wings-x**, in one sitting:
+1. **Install the alpha:** `uv tool install fav==0.1.0a1`; `fav --version`
+   prints `fav 0.1.0a1` and creates no directory (section 2). wings-x is
+   still installed and untouched, so a failed install changes nothing.
+2. **Move the data, check it, then retire wings-x**, in one sitting:
    - Confirm no wings-x process is running: `pgrep -fa wings_x` prints
      nothing. A wings-x refresh or sync in flight while its directory
      moves can lose a rotated token or the database's WAL files.
-   - `mv ~/.config/wings/x ~/.config/fav` and
-     `mv ~/.local/state/wings/x ~/.local/state/fav`, with neither
-     destination existing beforehand (section 2). `~/.config/wings/` and
-     `~/.local/state/wings/` stay; other Wings services use them.
-   - Remove the `wings-x` link from `~/.local/bin` and
-     `~/.local/share/wings-x/`, since a later `wings-x` run would create
-     empty directories at the old paths and ask for a new login.
-2. **Install the alpha and check it:** `uv tool install fav==0.1.0a1`.
-   `fav auth status` shows the same account and scopes as before;
-   `fav bookmarks list --limit 1` shows the existing last sync;
-   `fav usage` shows the existing ledger. No new login or sync.
+   - Confirm `~/.config/fav` and `~/.local/state/fav` do not exist, then
+     `mv ~/.config/wings/x ~/.config/fav` and
+     `mv ~/.local/state/wings/x ~/.local/state/fav`. `~/.config/wings/`
+     and `~/.local/state/wings/` stay; other Wings services use them.
+   - Check: `fav auth status` shows the same account and scopes as
+     before; `fav bookmarks list --limit 1` shows the existing last sync;
+     `fav usage` shows the existing ledger. No new login or sync.
+   - Only when every check passes, remove the `wings-x` link from
+     `~/.local/bin` and `~/.local/share/wings-x/`, since a later `wings-x`
+     run would create empty directories at the old paths and ask for a
+     new login. If a check fails, roll back with the two `mv` commands
+     reversed (the old paths are free again, since wings-x has not run),
+     and wings-x works as before.
 3. **Live check:** with the operator's yes, from the release branch,
    `FAV_LIVE=1 tests/live_smoke.sh`, comparing the ledger estimate with
    the change in X's credit balance.
