@@ -12,7 +12,7 @@ worktree: /home/jmo/linda/repos/fav/.worktrees/spec-fav-standalone
 # fav: implementation plan
 
 **Goal:** Ship wings-x as `fav` 0.1.0: the package imported and renamed, built and published from PyPI, with its `x-research` skill, its README and a Homebrew formula, ready for the Wings host switchover in the spec's section 6.
-**Architecture:** Five milestones in the spec's order: import and rename (the carried 405-test suite is the safety net), packaging and CI, skill and README, the 0.1.0 version, then the Homebrew formula. Operator gates between them cover the PyPI releases and the switchover on the Wings host.
+**Architecture:** Six milestones in the spec's order: import and rename (the carried 405-test suite is the safety net), packaging and CI, skill and README, the Homebrew formula at 0.1.0a1, the 0.1.0 version, then the formula moved to 0.1.0. Operator gates between them cover the PyPI releases and the switchover on the Wings host.
 **Spec:** `/home/jmo/linda/repos/fav/.worktrees/spec-fav-standalone/docs/2026-11-04-fav-spec-fav-standalone.md` (`docs/2026-11-04-fav-spec-fav-standalone.md` in this repository)
 **Base commit:** `37fae39`
 **Executor:** `run-plan`, one headless run per milestone
@@ -22,10 +22,10 @@ worktree: /home/jmo/linda/repos/fav/.worktrees/spec-fav-standalone
 
 - **Base.** `37fae39` (`docs(spec): approve the fav spec and check release tags`) holds only `README.md` (`# fav`) and `docs/`. Later commits that touch only `docs/` are expected and are not drift. No test runs at the base.
 - **Source.** The code comes from `service-dept/x-runtime` at `e6465c6`, read in place at `/home/jmo/linda/repos/x-runtime`. Task 1 copies it with `git archive`. Never edit, commit to or run anything in that checkout other than `git archive`, `git show` and `git log`.
-- **Test command.** From the repository root: `python3 -B -m unittest discover -s tests -t .` runs everything; `python3 -B -m unittest tests.test_<name>` runs one module. Run the whole suite with both `python3` (3.14) and `python3.11` before each commit, and name both results in the closing report. Expected totals, all passing with no skips: 405 after Task 1, 405 after Task 2, 410 after Task 3, 414 after Task 4 (end of Milestone 1), 423 after Task 5, 431 after Task 6 (end of Milestone 2), 439 after Task 7, 449 after Task 8 (end of Milestone 3), 449 after Task 9, 454 after Task 10. These were measured by building the whole plan in a scratch copy.
+- **Test command.** From the repository root: `python3 -B -m unittest discover -s tests -t .` runs everything; `python3 -B -m unittest tests.test_<name>` runs one module. Run the whole suite with both `python3` (3.14) and `python3.11` before each commit, and name both results in the closing report. Expected totals, all passing with no skips: 405 after Task 1, 405 after Task 2, 410 after Task 3, 414 after Task 4 (end of Milestone 1), 423 after Task 5, 431 after Task 6 (end of Milestone 2), 439 after Task 7, 449 after Task 8 (end of Milestone 3), 454 after Task 9 (end of Milestone 4), 454 after Task 10 (end of Milestone 5), 454 after Task 11. These were measured by building the whole plan in a scratch copy, before the formula moved ahead of the version change; the same five formula tests now land in Task 9.
 - **Reds.** The checker runs every red on the base plus every apply block. There, `wings_x/` has been imported but never renamed, so every quoted red is `ModuleNotFoundError: No module named 'fav'`. While building, the executor runs each task's red after its apply block and before implementing. Tasks 2–10 each name the build-time failure to expect. Any other failure is drift.
 - **No live X, no real home.** No test, check or command may contact `api.x.com` or `x.com`. Never run `fav`, `python3 -m fav` or `python3 -m wings_x` except with `--help` or `--version`, or inside a test's temporary home. Never create, read or write `~/.config/fav`, `~/.local/state/fav`, `~/.config/wings/x` or `~/.local/state/wings/x`. The spec's switchover needs both `fav` directories to be absent on this machine.
-- **Network.** Allowed only for: `uv build` fetching hatchling and hatch-fancy-pypi-readme (Task 5); reading X's developer documentation and each agent CLI's skills documentation (Task 8); and PyPI's JSON API for the 0.1.0 sdist (Task 10). If a fetch fails, say so in the closing report. Do not guess what it would have returned.
+- **Network.** Allowed only for: `uv build` fetching hatchling and hatch-fancy-pypi-readme (Task 5); reading X's developer documentation and each agent CLI's skills documentation (Task 8); and PyPI's JSON API for the 0.1.0a1 sdist (Task 9) and the 0.1.0 sdist (Task 11). If a fetch fails, say so in the closing report. Do not guess what it would have returned.
 - **Python.** The package uses only the standard library and only syntax and APIs from Python 3.11: no `type` statements, no PEP 695 generics, no PEP 701 f-string nesting.
 - **Commits.** One commit per task through git-commit, staging by path, except Task 1, which makes two. Each task names its message. The last line of every commit message is exactly `Generated with wings.computer` (see `~/linda/skills/references/harnesses.md`). No other trailer, and no harness or model name. The worktree may hold an untracked `.gitignore` the launcher created; never stage it.
 - **Simple commands.** One command per shell call where possible. No `rm -rf` outside a temporary directory you created. No `pip install` into any interpreter outside a temporary virtualenv.
@@ -35,13 +35,13 @@ worktree: /home/jmo/linda/repos/fav/.worktrees/spec-fav-standalone
   1. The import commit leaves out `LauncherTest` and the three imports only it used (`shutil`, `subprocess`, `tempfile`, plus its `ROOT`) from `tests/test_cli.py`, for the same reason the spec leaves out `tests/test_install.py`: they test a file that is not imported (`bin/wings-x`). Its replacement, `python -m fav --help`, is in `tests/test_version.py` (Task 4), next to the `--version` tests.
   2. Tests that read files outside `fav/` and `tests/` (`pyproject.toml`, the workflows, the skill, the README, the formula) skip when `fav` is imported from an installed package, because the spec's `installed` job copies only `tests/`. The skip depends on where `fav` was imported from, never on a file being missing, so a missing file in the checkout still fails.
   3. The test for leftover names scans the directory of the imported `fav` package and the tests directory, so it also runs in the `installed` job. It builds the word it looks for from two pieces, so the test file itself passes.
-  4. The Homebrew formula is written once 0.1.0 is on PyPI (Milestone 5), pointing at 0.1.0 directly. It is not first pointed at 0.1.0a1 and then moved. This avoids running the strict audit on a pre-release version, and folds the spec's release step 2 into Milestone 5.
+  4. The Homebrew formula is written once 0.1.0a1 is on PyPI (Milestone 4, after gate A), pointing at the 0.1.0a1 sdist, so `homebrew.yml` builds it from source on both systems before 0.1.0 is released. Milestone 6 moves it to the 0.1.0 sdist: the spec's release step 2. A pre-release URL does not trouble `brew audit --strict` in a tap: Homebrew's `formula_auditor.rb` (`audit_specs`) checks for pre-release URLs only for homebrew/core, and `0.1.0a1` does not match that check's pattern, `[\d._-](alpha|beta|rc\d)`.
   5. The formula's offline check is `fav bookmarks list --json` with an empty home. It prints `{"error": {"code": "X_CONFIG", ...}}` and exits 1, as checked against wings-x at `e6465c6`.
   6. `pyproject.toml`'s `description` is the GitHub repository's: "A read-only, spend-capped command line for X, built for agents."
   7. The README's part headings are fixed here so a test can hold them: `## Install`, `## Set up your X app`, `## Commands`, `## Spending`, `## With an agent`, `## Files`, `## Development`, `## License`. Part 1 is the text under `# fav`.
   8. The moved scenarios keep their numbers, S123–S125. The new no-`fav` scenario is S126, the next unused number in the Wings tree. The moved scenarios' dated Baseline and Result lines stay as written, as the wings-x-era record. New Result lines are added when the operator re-runs them.
   9. The skill's minimum `fav` version is 0.1.0.
-- Checked 2026-11-05 at 37fae39: 10 apply blocks, 9 reds as quoted, 2 probes pass.
+- Checked 2026-11-05 at 37fae39: 11 apply blocks, 10 reds as quoted, 2 probes pass.
 
 ## Review Focus
 
@@ -55,20 +55,21 @@ worktree: /home/jmo/linda/repos/fav/.worktrees/spec-fav-standalone
 
 ## Milestones
 
-- **Milestone 1: import and rename** (Tasks 1–4). Ends with the carried suite and the new name tests passing under `fav`: 414 tests, on Python 3.11 and 3.14. `python3 -B -m fav --version` prints `fav 0.1.0a1`. Reviewer brief: diff the import commit against `git -C /home/jmo/linda/repos/x-runtime archive e6465c6 wings_x tests`; the only differences allowed are the missing `test_install.py` and `LauncherTest`. Check that the later commits change names only (strings, paths, imports, the User-Agents, `FAV_LIVE`, `releases_dir` gone) and leave behaviour alone, that `--version` exits before `build_context`, and that `tests/live_smoke.sh` still refuses to spend without `FAV_LIVE=1`.
+- **Milestone 1: import and rename** (Tasks 1–4). Ends with the carried suite and the new name tests passing under `fav`: 414 tests, on Python 3.11 and 3.14. `python3 -B -m fav --version` prints `fav 0.1.0a1`. Reviewer brief: diff the import commit against `git -C /home/jmo/linda/repos/x-runtime archive e6465c6 wings_x tests`; the only differences allowed are the missing `tests/test_install.py` and, in `tests/test_cli.py`, the missing `LauncherTest` class, the imports only it used (`shutil`, `subprocess`, `tempfile`) and its `ROOT` line. Check that the later commits change names only (strings, paths, imports, the User-Agents, `FAV_LIVE`, `releases_dir` gone) and leave behaviour alone, that `--version` exits before `build_context`, and that `tests/live_smoke.sh` still refuses to spend without `FAV_LIVE=1`.
 - **Milestone 2: packaging and CI** (Tasks 5–6). Ends with `pyproject.toml`, `tests.yml` and `publish.yml`. A locally built wheel installs into a temporary virtualenv, where `fav --version` prints `fav 0.1.0a1` and the copied suite passes with the source-tree tests skipped. Suite: 431. Reviewer brief: check `pyproject.toml` against the spec's list and op-img's file, that the wheel holds only `fav/` and the sdist holds `fav/`, `tests/`, `README.md` and `LICENSE`, the `installed` job's working directory and interpreter, the tag check's position and quoting, and that `publish.yml` otherwise matches op-img's.
 - **Milestone 3: skill and README** (Tasks 7–8). Ends with `skills/x-research/` (the skill and its scenarios) and the README. Suite: 449. Reviewer brief: compare the skill line by line with Wings' `skills/x-research/SKILL.md` at `dbb1ff26`. Every change must be one the spec's section 4 lists. Check the README's X console steps and the agent CLIs' skills paths against the sources the closing report cites, the four scopes, the callback URL, and that nothing names a person.
-- **Milestone 4: version 0.1.0** (Task 9). Starts only after Milestone 3 is merged and the operator has done the spec's section 6 steps 1–3 (gate B below). Ends with `__version__ = "0.1.0"`. Suite: 449. Reviewer brief: check that nothing else changed, and that `fav --version` from a fresh wheel prints `fav 0.1.0`.
-- **Milestone 5: Homebrew** (Task 10). Starts only after `v0.1.0` is on PyPI (gate C below). Ends with `Formula/fav.rb` at the 0.1.0 sdist and `homebrew.yml`, green in CI on both systems. Suite: 454. Reviewer brief: check the sdist URL and sha256 against PyPI's JSON for 0.1.0, the `test do` block, `setup-homebrew` pinned to op-img's commit, and the workflow's triggers.
+- **Milestone 4: Homebrew at 0.1.0a1** (Task 9). Starts only after Milestone 3 is merged and `v0.1.0a1` is on PyPI (gate A below). Ends with `Formula/fav.rb` at the 0.1.0a1 sdist and `homebrew.yml`, green in CI on both systems. Suite: 454. Reviewer brief: check the sdist URL and sha256 against PyPI's JSON for 0.1.0a1, the `test do` block, `setup-homebrew` pinned to op-img's commit, and the workflow's triggers.
+- **Milestone 5: version 0.1.0** (Task 10). Starts only after Milestone 4 is merged and the operator has done the spec's section 6 steps 1–3 (gate B below). Ends with `__version__ = "0.1.0"`. Suite: 454. Reviewer brief: check that nothing else changed, and that `fav --version` from a fresh wheel prints `fav 0.1.0`.
+- **Milestone 6: Homebrew at 0.1.0** (Task 11). Starts only after `v0.1.0` is on PyPI (gate C below). Ends with `Formula/fav.rb` at the 0.1.0 sdist, green in CI on both systems. Suite: 454. Reviewer brief: check that only the formula's `url` and `sha256` and the test's sdist name changed, and the new URL and sha256 against PyPI's JSON for 0.1.0.
 
 ## Operator gates
 
 These are done by the operator and the interactive session, not by a milestone run.
 
 - **Gate A, after Milestone 2 is merged and `tests.yml` is green on `main`:** the spec's section 3. The operator adds the pending publisher (project `fav`, owner `service-dept`, repository `fav`, workflow `publish.yml`, environment `pypi`). The operator publishes GitHub release `v0.1.0a1`, marked as a pre-release. Check: `https://pypi.org/project/fav/0.1.0a1/` exists, and `uv tool run --from fav==0.1.0a1 fav --version` prints `fav 0.1.0a1`.
-- **Gate B, after gate A:** the spec's section 6 steps 1–3 on the Wings host. Install the alpha, move the data, check it, retire wings-x, then run the live smoke test with the operator's yes. Milestone 4 waits for this.
-- **Gate C, after Milestone 4 is merged:** the operator publishes GitHub release `v0.1.0` (not a pre-release). Check: `uv tool run --from fav==0.1.0 fav --version` prints `fav 0.1.0`.
-- **Gate D, after Milestone 5 is merged:** a pull request to `service-dept/homebrew-tap` adds the same `Formula/fav.rb`, opened only on the operator's yes. Then the spec's section 6 steps 4–7. The operator re-runs S123–S126 against a fake `fav` and records the results in `skills/x-research/tests/scenarios.md`.
+- **Gate B, after gate A:** the spec's section 6 steps 1–3 on the Wings host. Install the alpha, move the data, check it, retire wings-x, then run the live smoke test with the operator's yes. Milestone 5 waits for this; Milestone 4 does not.
+- **Gate C, after Milestone 5 is merged:** the operator publishes GitHub release `v0.1.0` (not a pre-release). Check: `uv tool run --from fav==0.1.0 fav --version` prints `fav 0.1.0`.
+- **Gate D, after Milestone 6 is merged:** a pull request to `service-dept/homebrew-tap` adds the same `Formula/fav.rb`, opened only on the operator's yes. Then the spec's section 6 steps 4–7. The operator re-runs S123–S126 against a fake `fav` and records the results in `skills/x-research/tests/scenarios.md`.
 
 ### Task 1: license and import
 
@@ -136,7 +137,7 @@ git -C /home/jmo/linda/repos/x-runtime show e6465c6:wings_x/__init__.py
 __version__ = "0.1.0"
 ```
 
-**Checks:** `python3 -B -m unittest discover -s tests -t .` and the same with `python3.11` print `Ran 405 tests` and `OK`. `git status --short` shows only `LICENSE`, `tests/` and `wings_x/`.
+**Checks:** `python3 -B -m unittest discover -s tests -t .` and the same with `python3.11` print `Ran 405 tests` and `OK`. `git status --short` shows only `LICENSE`, `tests/` and `wings_x/`, plus the launcher's untracked `.gitignore` if the worktree has one (see Commits).
 
 **Commits:** first `LICENSE` alone: `chore: add the MIT license`. Then `wings_x/` and `tests/`: `chore: import wings-x from x-runtime at e6465c6`, with a body saying that `bin/wings-x`, `install`, `tests/test_install.py` and `LauncherTest` were left out because they cover the launcher and install script that the package entry point replaces.
 
@@ -626,6 +627,11 @@ class TestsWorkflowTest(unittest.TestCase):
         self.assertIn('"*.whl"', self.text)
         self.assertIn('"*.tar.gz"', self.text)
         self.assertIn("$RUNNER_TEMP/suite", self.text)
+        # Run from the repository root, the copied suite would import the checkout's fav.
+        self.assertEqual(self.text.count("working-directory: ${{ runner.temp }}/suite\n"), 2)
+        self.assertIn("assert fav.__file__.startswith(sys.prefix), fav.__file__", self.text)
+        self.assertLess(self.text.index("assert fav.__file__.startswith(sys.prefix)"),
+                        self.text.index("$RUNNER_TEMP/venv/bin/" + SUITE))
         self.assertIn("$RUNNER_TEMP/venv/bin/" + SUITE, self.text)
         self.assertIn("$RUNNER_TEMP/venv/bin/fav --version", self.text)
 
@@ -687,12 +693,12 @@ ModuleNotFoundError: No module named 'fav'
 
 - `tests.yml`, named `Tests`, on `pull_request` and on `push` to `main`, with `permissions: contents: read`.
   - Job `unit`: a matrix of `os: [ubuntu-latest, macos-latest]` and `python-version: ["3.11", "3.12", "3.13", "3.14"]`, `fail-fast: false`. Steps: checkout, setup-python with the matrix version, then `run: python -B -m unittest discover -s tests -t .` from the repository root, with no install.
-  - Job `installed`: a matrix of `include` entries `{package: wheel, file: "*.whl"}` and `{package: sdist, file: "*.tar.gz"}`, on `ubuntu-latest` with Python `"3.12"`. Steps: checkout, setup-python, `python -m pip install build`, `python -m build`, `python -m venv "$RUNNER_TEMP/venv"`, `$RUNNER_TEMP/venv/bin/pip install dist/${{ matrix.file }}`, then `mkdir -p "$RUNNER_TEMP/suite"` and `cp -R tests "$RUNNER_TEMP/suite/tests"`. Next, a step with `working-directory: ${{ runner.temp }}/suite` that runs `$RUNNER_TEMP/venv/bin/python -B -m unittest discover -s tests -t .`. Last, `$RUNNER_TEMP/venv/bin/fav --version`.
+  - Job `installed`: a matrix of `include` entries `{package: wheel, file: "*.whl"}` and `{package: sdist, file: "*.tar.gz"}`, on `ubuntu-latest` with Python `"3.12"`. Steps: checkout, setup-python, `python -m pip install build`, `python -m build`, `python -m venv "$RUNNER_TEMP/venv"`, `$RUNNER_TEMP/venv/bin/pip install dist/${{ matrix.file }}`, then `mkdir -p "$RUNNER_TEMP/suite"` and `cp -R tests "$RUNNER_TEMP/suite/tests"`. Next, two steps, each with `working-directory: ${{ runner.temp }}/suite`. The first, named `fav comes from the virtualenv`, runs `$RUNNER_TEMP/venv/bin/python -c 'import fav, sys; assert fav.__file__.startswith(sys.prefix), fav.__file__'`. The second runs `$RUNNER_TEMP/venv/bin/python -B -m unittest discover -s tests -t .`. Last, `$RUNNER_TEMP/venv/bin/fav --version`.
   - A comment above `installed` says that it tests the package as pipx and Homebrew install it, and that the source-tree tests skip there.
   - Use op-img's action versions (`actions/checkout@v4`, `actions/setup-python@v5`).
 - `publish.yml`: op-img's at `5e70f15`, with its header comment naming `fav`. The `test` job keeps checkout and setup-python 3.12. Its pip-install and pytest steps become the spec's `Tag matches version` step, exactly as the spec's section 2 quotes it, then `run: python -B -m unittest discover -s tests -t .`. `build` and `publish` are unchanged.
 
-**Checks:** the whole suite: 431 tests, OK, on both interpreters. If `actionlint` is on PATH, it reports nothing for either file; otherwise say it was not run.
+**Checks:** the whole suite: 431 tests, OK, on both interpreters. If `actionlint` is on PATH, it reports nothing for either file; otherwise say it was not run. The carried suite has never run on macOS. If a `macos-latest` job fails on the pull request, stop and quote the failing log in the closing report. Do not change code to suit a system this host cannot run.
 
 **Commit:** `ci: test the source tree and installed packages, and publish on release`.
 
@@ -936,32 +942,7 @@ ModuleNotFoundError: No module named 'fav'
 
 **Commit:** `docs: write the README`.
 
-### Task 9: version 0.1.0
-
-**Files:** `tests/test_version.py` (apply block); `fav/__init__.py`.
-
-```bash apply
-sed -i 's/self.assertEqual(fav.__version__, "0.1.0a1")/self.assertEqual(fav.__version__, "0.1.0")/' tests/test_version.py
-grep -q 'self.assertEqual(fav.__version__, "0.1.0")' tests/test_version.py
-```
-
-```bash red
-python3 -B -m unittest tests.test_version
-```
-
-```expected
-ModuleNotFoundError: No module named 'fav'
-```
-
-**Build-time failure:** `test_value` gives `AssertionError: '0.1.0a1' != '0.1.0'`.
-
-**Implementation:** `fav/__init__.py`: `__version__ = "0.1.0"`. Nothing else changes. The classifier stays `Development Status :: 3 - Alpha`.
-
-**Checks:** the whole suite: 449 tests, OK, on both interpreters. A fresh `uv build` into a temporary directory names `fav-0.1.0-py3-none-any.whl` and `fav-0.1.0.tar.gz`.
-
-**Commit:** `chore: release 0.1.0`.
-
-### Task 10: Homebrew formula
+### Task 9: Homebrew formula at 0.1.0a1
 
 **Files:** `tests/test_formula.py` (new); `Formula/fav.rb`, `.github/workflows/homebrew.yml` (new).
 
@@ -998,7 +979,7 @@ class FormulaTest(unittest.TestCase):
         self.assertIsNotNone(url)
         self.assertRegex(url.group(1),
                          r"^https://files\.pythonhosted\.org/packages/[0-9a-f]{2}/[0-9a-f]{2}/[0-9a-f]{60}/"
-                         r"fav-\d+\.\d+\.\d+\.tar\.gz$")
+                         r"fav-0\.1\.0a1\.tar\.gz$")
         self.assertRegex(self.text, r'(?m)^  sha256 "[0-9a-f]{64}"$')
 
     def test_test_block(self):
@@ -1049,11 +1030,61 @@ ModuleNotFoundError: No module named 'fav'
 
 - `Formula/fav.rb`, modelled on op-img's `Formula/op-img.rb` at `5e70f15`:
   - `class Fav < Formula`, `include Language::Python::Virtualenv`, `desc "Read-only, spend-capped command-line for X, built for agents"`, and `homepage`.
-  - `url` and `sha256` come from `https://pypi.org/pypi/fav/0.1.0/json` (the `sdist` entry's `url` and `digests.sha256`).
+  - `url` and `sha256` come from `https://pypi.org/pypi/fav/0.1.0a1/json` (the `sdist` entry's `url` and `digests.sha256`).
   - `license "MIT"`, `depends_on "python@3.14"`, no resources, and `def install` calling `virtualenv_install_with_resources`.
   - `test do`: `assert_match "fav #{version}", shell_output("#{bin}/fav --version")`, then `assert_match "X_CONFIG", shell_output("#{bin}/fav bookmarks list --json", 1)` (decision 5).
 - `.github/workflows/homebrew.yml`: op-img's, with `op-img` renamed to `fav` in the paths, tap (`service-dept/fav-ci`) and formula name, and the last step named `Test the installed command`. The schedule comment says Homebrew's Python moves without any change here.
 
-**Checks:** the whole suite: 454 tests, OK, on both interpreters. `brew` is not on this host, so `homebrew.yml` on the pull request is the formula's check: its run on both systems must be green before merge. If `brew audit --strict` objects to the formula having no resources, change the formula as the audit asks and say so in the closing report.
+**Checks:** the whole suite: 454 tests, OK, on both interpreters. `brew` is not on this host, so `homebrew.yml` on the pull request is the formula's check: its run on both systems must be green before merge. If `brew audit --strict` or the install objects to the formula having no resources, stop and quote the failing log in the closing report. Do not add resources or change the test: the interactive session amends the plan, since the spec lets the formula change to satisfy the audit.
 
-**Commit:** `build: add the Homebrew formula and its CI check`.
+**Commit:** `build: add the Homebrew formula at 0.1.0a1 and its CI check`.
+
+### Task 10: version 0.1.0
+
+**Files:** `tests/test_version.py` (apply block); `fav/__init__.py`.
+
+```bash apply
+sed -i 's/self.assertEqual(fav.__version__, "0.1.0a1")/self.assertEqual(fav.__version__, "0.1.0")/' tests/test_version.py
+grep -q 'self.assertEqual(fav.__version__, "0.1.0")' tests/test_version.py
+```
+
+```bash red
+python3 -B -m unittest tests.test_version
+```
+
+```expected
+ModuleNotFoundError: No module named 'fav'
+```
+
+**Build-time failure:** `test_value` gives `AssertionError: '0.1.0a1' != '0.1.0'`.
+
+**Implementation:** `fav/__init__.py`: `__version__ = "0.1.0"`. Nothing else changes: `Formula/fav.rb` stays at the 0.1.0a1 sdist until Task 11. The classifier stays `Development Status :: 3 - Alpha`.
+
+**Checks:** the whole suite: 454 tests, OK, on both interpreters. A fresh `uv build` into a temporary directory names `fav-0.1.0-py3-none-any.whl` and `fav-0.1.0.tar.gz`.
+
+**Commit:** `chore: release 0.1.0`.
+
+### Task 11: Homebrew formula at 0.1.0
+
+**Files:** `tests/test_formula.py` (apply block); `Formula/fav.rb`.
+
+```bash apply
+sed -i 's/r"fav-0\\.1\\.0a1\\.tar\\.gz\$")/r"fav-0\\.1\\.0\\.tar\\.gz$")/' tests/test_formula.py
+grep -q 'r"fav-0\\.1\\.0\\.tar\\.gz\$")' tests/test_formula.py
+```
+
+```bash red
+python3 -B -m unittest tests.test_formula
+```
+
+```expected
+ModuleNotFoundError: No module named 'fav'
+```
+
+**Build-time failure:** `FormulaTest.test_sdist` fails with an `AssertionError`: the formula's URL still ends `fav-0.1.0a1.tar.gz`.
+
+**Implementation:** in `Formula/fav.rb`, the `url` and `sha256` from `https://pypi.org/pypi/fav/0.1.0/json` (the `sdist` entry's `url` and `digests.sha256`). Nothing else changes.
+
+**Checks:** the whole suite: 454 tests, OK, on both interpreters. `homebrew.yml` on the pull request must be green on both systems before merge. If it fails, stop and quote the failing log in the closing report.
+
+**Commit:** `build: point the Homebrew formula at 0.1.0`.
