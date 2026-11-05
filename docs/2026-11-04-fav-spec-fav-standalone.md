@@ -3,10 +3,12 @@ title: "fav: wings-x as a standalone package and skill"
 kind: spec
 target: fav
 topic: fav-standalone
-status: draft
+status: approved
 written: 2026-11-04T22:04:49Z
 by: claude
 worktree: /home/jmo/linda/repos/fav/.worktrees/spec-fav-standalone
+approved_at: 2026-11-05T22:52:45Z
+approved_by: josh
 ---
 
 # fav: wings-x as a standalone package and skill
@@ -225,7 +227,18 @@ any directory. It is the only change to the command surface.
 jobs, its `release: published` trigger and its permissions unchanged,
 except that the test job runs
 `python -B -m unittest discover -s tests -t .` from the repository root
-in place of pytest.
+in place of pytest, and first checks that the release tag matches the
+package version, so a release can never misreport its version the way
+wings-x's `v0.2.0` (carrying `__version__ = "0.1.0"`) does:
+
+```yaml
+- name: Tag matches version
+  env:
+    TAG: ${{ github.event.release.tag_name }}
+  run: test "$TAG" = "v$(python -c 'import fav; print(fav.__version__)')"
+```
+
+A mismatch fails the test job, so `build` and `publish` never run.
 
 Before the first release, nothing on the Wings host runs a `fav`
 command other than `--help`, `--version` and the test suite (which uses
@@ -398,8 +411,8 @@ against `fav`.
   - no file under `fav/` or `tests/` contains `wings`, case-insensitively,
     apart from this test's own pattern.
 - **CI:** `tests.yml` (the unit matrix and the installed packages),
-  `publish.yml`'s test job, and `homebrew.yml`, including
-  `brew audit --strict`.
+  `publish.yml`'s test job with its tag check, and `homebrew.yml`,
+  including `brew audit --strict`.
 - **Skill:** S123–S125 re-run against a fake `fav` with the rewritten
   skill, and a new scenario: with no `fav` on PATH, the skill gives the
   three install commands and stops without reaching X another way.
@@ -424,8 +437,8 @@ against `fav`.
 ## Follow-ups
 
 - The skills tree's `install` reports every existing link as a conflict
-  when the links point through a symlink to the tree; to be filed against
-  `service-dept/wings`.
+  when the links point through a symlink to the tree: already open as
+  `service-dept/wings#209`.
 - Teach that `install` to link skills from other repositories, if a
   second one appears.
 - A website.
@@ -433,7 +446,6 @@ against `fav`.
 
 ## Open questions
 
-1. Should `publish.yml`'s test job also fail when the release tag is not
-   `v<__version__>`? wings-x's `v0.2.0` tag carries `__version__ =
-   "0.1.0"`, so its User-Agent misreports the version; the check would
-   stop that recurring in `fav`. The expert review recommends yes.
+- none. The one open question, whether `publish.yml` fails when the
+  release tag is not `v<__version__>`, was answered yes on 2026-11-05;
+  section 2 has the check.
