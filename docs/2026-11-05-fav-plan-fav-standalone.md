@@ -426,7 +426,7 @@ python3 -B -m unittest tests.test_version
 ModuleNotFoundError: No module named 'fav'
 ```
 
-**Build-time failure:** 3 failures. `test_value` gives `AssertionError: '0.1.0' != '0.1.0a1'`. `test_version_flag` gets exit code 2 with `unrecognized arguments` on stderr. `test_version` (in `ModuleTest`) also exits 2. `test_help` passes before and after, because the package already runs as a module. A pass there is not drift.
+**Build-time failure:** 3 failures. `test_value` gives `AssertionError: '0.1.0' != '0.1.0a1'`. `test_version_flag` gets exit code 2 with `the following arguments are required: command` on stderr (argparse checks the required subcommand before it reports the unknown flag). `test_version` (in `ModuleTest`) also exits 2. `test_help` passes before and after, because the package already runs as a module. A pass there is not drift.
 
 **Implementation:** `fav/__init__.py`: `__version__ = "0.1.0a1"`. `fav/cli.py`: the top-level parser gets `--version` through argparse's `version` action, printing `fav <__version__>`. argparse prints and exits inside `parse_args`, so `main` returns 0 through its existing `SystemExit` handling before `build_context`, and no directory is created. `fav --help` lists the flag.
 
