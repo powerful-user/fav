@@ -1,3 +1,4 @@
+import dataclasses
 import errno
 import os
 import sqlite3
@@ -14,9 +15,9 @@ from fav.errors import CODES, EXIT_ERROR, EXIT_OK, EXIT_USAGE, XError, local_io_
 class PathsTest(TempHome):
     def test_xdg_paths(self):
         p = paths.resolve_paths(self.env)
-        self.assertEqual(p.config_dir, os.path.join(self.env["XDG_CONFIG_HOME"], "wings", "x"))
-        self.assertEqual(p.state_dir, os.path.join(self.env["XDG_STATE_HOME"], "wings", "x"))
-        self.assertEqual(p.releases_dir, os.path.join(self.env["XDG_DATA_HOME"], "wings-x", "releases"))
+        self.assertEqual(p.config_dir, os.path.join(self.env["XDG_CONFIG_HOME"], "fav"))
+        self.assertEqual(p.state_dir, os.path.join(self.env["XDG_STATE_HOME"], "fav"))
+        self.assertEqual([f.name for f in dataclasses.fields(p)], ["config_dir", "state_dir"])
         self.assertEqual(p.config_file, os.path.join(p.config_dir, "config.toml"))
         self.assertEqual(p.token_file, os.path.join(p.config_dir, "token.json"))
         self.assertEqual(p.app_bearer_file, os.path.join(p.config_dir, "app-bearer"))
@@ -26,13 +27,12 @@ class PathsTest(TempHome):
 
     def test_home_fallback(self):
         p = paths.resolve_paths({"HOME": self.tmp})
-        self.assertEqual(p.config_dir, os.path.join(self.tmp, ".config", "wings", "x"))
-        self.assertEqual(p.state_dir, os.path.join(self.tmp, ".local", "state", "wings", "x"))
-        self.assertEqual(p.releases_dir, os.path.join(self.tmp, ".local", "share", "wings-x", "releases"))
+        self.assertEqual(p.config_dir, os.path.join(self.tmp, ".config", "fav"))
+        self.assertEqual(p.state_dir, os.path.join(self.tmp, ".local", "state", "fav"))
 
     def test_empty_xdg_value_falls_back(self):
         p = paths.resolve_paths({"HOME": self.tmp, "XDG_CONFIG_HOME": ""})
-        self.assertEqual(p.config_dir, os.path.join(self.tmp, ".config", "wings", "x"))
+        self.assertEqual(p.config_dir, os.path.join(self.tmp, ".config", "fav"))
 
     def test_missing_home_is_an_error(self):
         with self.assertRaises(XError) as ctx:

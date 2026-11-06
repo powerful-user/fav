@@ -135,7 +135,7 @@ class IncrementalSyncTest(SyncBase):
 
     def test_needs_login(self):
         import os
-        os.remove(os.path.join(self.env["XDG_CONFIG_HOME"], "wings", "x", "token.json"))
+        os.remove(os.path.join(self.env["XDG_CONFIG_HOME"], "fav", "token.json"))
         with self.assertRaises(XError) as ctx:
             bm.sync(self.ctx)
         self.assertEqual(ctx.exception.code, "X_AUTH_REQUIRED")

@@ -84,7 +84,7 @@ class TempHome(unittest.TestCase):
     """A temporary HOME and XDG directories, exposed as self.env."""
 
     def setUp(self):
-        self.tmp = tempfile.mkdtemp(prefix="wings-x-test-")
+        self.tmp = tempfile.mkdtemp(prefix="fav-test-")
         self.addCleanup(shutil.rmtree, self.tmp, True)
         self.env = {
             "HOME": self.tmp,
@@ -95,7 +95,7 @@ class TempHome(unittest.TestCase):
 
 
 def config_dir(env):
-    return os.path.join(env["XDG_CONFIG_HOME"], "wings", "x")
+    return os.path.join(env["XDG_CONFIG_HOME"], "fav")
 
 
 def write_config(env, text=CONFIG_TOML):
@@ -153,3 +153,7 @@ def users_response(*pairs):
     """Pairs of (id, username) as a 200 response from /2/users."""
     data = [{"id": uid, "username": name, "name": name.title()} for uid, name in pairs]
     return response(200, {"data": data})
+
+
+# The project's old name, assembled so no file under tests/ contains it.
+OLD_NAME = "w" + "ings"

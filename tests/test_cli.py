@@ -43,7 +43,7 @@ class CliTest(CliBase):
     def test_help(self):
         code, out, _ = self.run_cli("--help")
         self.assertEqual(code, 0)
-        self.assertIn("usage: wings x", out)
+        self.assertIn("usage: fav", out)
         for word in ("search", "post", "thread", "user", "bookmarks", "usage", "auth"):
             self.assertIn(word, out)
 

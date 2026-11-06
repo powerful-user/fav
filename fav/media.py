@@ -106,7 +106,7 @@ def pending_count(posts: list) -> int:
 
 
 def _malformed():
-    return XError("X_UPSTREAM", "X returned a media lookup wings-x cannot read")
+    return XError("X_UPSTREAM", "X returned a media lookup fav cannot read")
 
 
 def _resources(post):

@@ -126,7 +126,7 @@ class SearchTest(CommandsBase):
                 with self.assertRaises(XError) as ctx:
                     commands.search(self.ctx, "agents")
                 self.assertEqual(ctx.exception.code, "X_UPSTREAM")
-                self.assertEqual(ctx.exception.message, "X returned a response wings-x cannot read")
+                self.assertEqual(ctx.exception.message, "X returned a response fav cannot read")
                 self.assertIsNone(self.ctx.store.get_post("1001"))
 
     def test_page_without_count_is_unchanged(self):

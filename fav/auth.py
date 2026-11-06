@@ -23,7 +23,7 @@ TOKEN_URL = "https://api.x.com/2/oauth2/token"
 REVOKE_URL = "https://api.x.com/2/oauth2/revoke"
 REFRESH_MARGIN = timedelta(seconds=60)
 MAX_EXPIRES_IN = 366 * 24 * 3600
-LOGIN_HINT = "run wings x auth login"
+LOGIN_HINT = "run fav auth login"
 
 # A bearer value goes into an HTTP header, so only visible ASCII is allowed.
 _HEADER_SAFE = re.compile(r"^[\x21-\x7e]+$")
@@ -229,7 +229,7 @@ class Auth:
         headers = {
             "Content-Type": "application/x-www-form-urlencoded",
             "Accept": "application/json",
-            "User-Agent": "wings-x/" + __version__,
+            "User-Agent": "fav/" + __version__,
         }
         # Sent once: token and revoke requests are never retried.
         return self.transport.send("POST", url, headers, urlencode(form).encode("ascii"), TIMEOUT)
@@ -383,9 +383,9 @@ class Auth:
         except FileNotFoundError:
             return None
         except (OSError, ValueError):
-            raise XError("X_AUTH_REQUIRED", "app-bearer is invalid; run wings x auth app-token") from None
+            raise XError("X_AUTH_REQUIRED", "app-bearer is invalid; run fav auth app-token") from None
         if not value:
             return None
         if not _HEADER_SAFE.match(value):
-            raise XError("X_AUTH_REQUIRED", "app-bearer is invalid; run wings x auth app-token")
+            raise XError("X_AUTH_REQUIRED", "app-bearer is invalid; run fav auth app-token")
         return value

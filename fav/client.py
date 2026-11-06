@@ -18,7 +18,7 @@ Response = namedtuple("Response", "status headers body")
 BASE_URL = "https://api.x.com"
 TIMEOUT = 20
 RETRY_DELAY = 2
-USER_AGENT = "wings-x/" + __version__
+USER_AGENT = "fav/" + __version__
 
 _EPOCH_SECONDS = re.compile(r"^\d{1,12}$")
 

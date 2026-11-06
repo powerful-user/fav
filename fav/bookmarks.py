@@ -243,7 +243,7 @@ def pending_authors(store: Store) -> list[str]:
 def _user_path(ctx):
     user_id = ctx.auth.user_id()
     if not isinstance(user_id, str) or not _USER_ID.fullmatch(user_id):
-        raise XError("X_AUTH_REQUIRED", "token.json holds no valid user ID; run wings x auth login")
+        raise XError("X_AUTH_REQUIRED", "token.json holds no valid user ID; run fav auth login")
     return "/2/users/" + user_id + "/bookmarks"
 
 

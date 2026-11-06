@@ -10,7 +10,6 @@ from fav.errors import XError, local_io_error
 class Paths:
     config_dir: str
     state_dir: str
-    releases_dir: str
 
     @property
     def config_file(self):
@@ -50,11 +49,9 @@ def _xdg_or_home(env, key, *home_parts):
 def resolve_paths(env: Mapping[str, str]) -> Paths:
     config_root = _xdg_or_home(env, "XDG_CONFIG_HOME", ".config")
     state_root = _xdg_or_home(env, "XDG_STATE_HOME", ".local", "state")
-    data_root = _xdg_or_home(env, "XDG_DATA_HOME", ".local", "share")
     return Paths(
-        config_dir=os.path.join(config_root, "wings", "x"),
-        state_dir=os.path.join(state_root, "wings", "x"),
-        releases_dir=os.path.join(data_root, "wings-x", "releases"),
+        config_dir=os.path.join(config_root, "fav"),
+        state_dir=os.path.join(state_root, "fav"),
     )
 
 

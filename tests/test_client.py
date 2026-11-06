@@ -45,7 +45,7 @@ class ClientTest(TempHome):
         self.assertEqual(req["method"], "GET")
         self.assertEqual(req["url"], "https://api.x.com/2/tweets/search/recent?max_results=25&query=agents")
         self.assertEqual(req["headers"]["Authorization"], "Bearer tok-1")
-        self.assertTrue(req["headers"]["User-Agent"].startswith("wings-x/"))
+        self.assertTrue(req["headers"]["User-Agent"].startswith("fav/"))
         self.assertEqual(req["timeout"], 20)
         self.assertIsNone(req["body"])
         (r,) = self.rows()

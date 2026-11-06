@@ -41,7 +41,7 @@ class SecretsTest(CliBase):
         self.assertEqual(self.transport.requests[-1]["url"], "https://api.x.com/2/oauth2/token")
         self.assertIn("X_AUTH_EXPIRED", outputs[-1])
 
-        state = os.path.join(self.env["XDG_STATE_HOME"], "wings", "x")
+        state = os.path.join(self.env["XDG_STATE_HOME"], "fav")
         blobs = []
         for dirpath, _dirs, files in os.walk(state):
             for name in files:
@@ -60,7 +60,7 @@ class SecretsTest(CliBase):
 
 class LiveSmokeTest(unittest.TestCase):
     def test_skips_without_flag(self):
-        env = dict((k, v) for k, v in os.environ.items() if k not in ("WINGS_X_LIVE", "BASH_ENV", "ENV"))
+        env = dict((k, v) for k, v in os.environ.items() if k not in ("FAV_LIVE", "BASH_ENV", "ENV"))
         proc = subprocess.run(["bash", os.path.join(ROOT, "tests", "live_smoke.sh")], capture_output=True, text=True,
                               env=env)
         self.assertEqual(proc.returncode, 0, proc.stderr)

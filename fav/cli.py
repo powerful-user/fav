@@ -44,7 +44,7 @@ def _parser():
     spending.add_argument("--budget", type=_budget, metavar="USD",
                           help="extra spend allowed for this invocation above the daily ceiling")
 
-    parser = argparse.ArgumentParser(prog="wings x", description="Read-only access to X for Wings agents.")
+    parser = argparse.ArgumentParser(prog="fav", description="Read-only access to X for agents.")
     sub = parser.add_subparsers(dest="command", metavar="command", required=True)
 
     auth = sub.add_parser("auth", help="sign in, check, or sign out")
@@ -148,7 +148,7 @@ def _handler(path, state, results, port):
                 return
             got = params.get("state", [""])[0]
             if not hmac.compare_digest(got.encode("utf-8"), state.encode("utf-8")):
-                self._reply(400, "this is not the login wings x is waiting for")
+                self._reply(400, "this is not the login fav is waiting for")
                 return
             self._reply(200, "you can close this tab")
             results.put("http://" + LOOPBACK_HOST + ":" + str(port) + self.path)
@@ -210,7 +210,7 @@ def _login(ctx, *, prompt, stdin, stderr, loopback, timeout):
             redirect = results.get(timeout=timeout)
         except queue.Empty:
             raise XError("X_AUTH_REQUIRED", "no redirect URL arrived within " + format(timeout, "g")
-                         + " seconds; run wings x auth login again") from None
+                         + " seconds; run fav auth login again") from None
     finally:
         if server is not None:
             # From the main thread: shutdown() inside a handler would wait on itself.
@@ -240,7 +240,7 @@ def _status(ctx):
         app_token = ctx.auth.load_app_bearer() is not None
         app_text = "present" if app_token else "missing"
     except XError:
-        app_token, app_text = False, "invalid; run wings x auth app-token"
+        app_token, app_text = False, "invalid; run fav auth app-token"
     result = {"username": data["username"], "user_id": data["id"], "scope": token.get("scope"),
               "expires_at": token["expires_at"], "app_token": app_token}
     plain = ("@" + data["username"] + " (id " + data["id"] + ")\n"

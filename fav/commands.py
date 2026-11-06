@@ -75,7 +75,7 @@ def _whole(value, low, high, label):
 
 
 def _unreadable():
-    return XError("X_UPSTREAM", "X returned a response wings-x cannot read")
+    return XError("X_UPSTREAM", "X returned a response fav cannot read")
 
 
 def _list_data(payload):
@@ -484,7 +484,7 @@ def usage(ctx: Context, days: int = 7) -> dict:
         bearer = ctx.auth.load_app_bearer()
         if bearer is None:
             result["x_note"] = ("X usage needs the app bearer token in " + ctx.paths.app_bearer_file
-                                + "; run wings x auth app-token")
+                                + "; run fav auth app-token")
             return result
         credits = ctx.client.get_exempt("usage", "/2/usage/credits", None, bearer=bearer)
         tweets = ctx.client.get_exempt("usage", "/2/usage/tweets", {"days": days}, bearer=bearer)
@@ -517,7 +517,7 @@ def _local_result(ctx, items, folder):
 def bookmarks_search(ctx, query: str, *, from_user: str | None = None, since: str | None = None,
                      until: str | None = None, folder: str | None = None, limit: int | None = None,
                      include_removed: bool = False) -> dict:
-    # Imported here: wings_x.bookmarks imports this module.
+    # Imported here: fav.bookmarks imports this module.
     from fav import bookmarks
 
     text = query.strip() if isinstance(query, str) else ""
