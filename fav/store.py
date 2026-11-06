@@ -4,7 +4,7 @@ import sqlite3
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 
-from wings_x.parse import parse_date, post_url
+from fav.parse import parse_date, post_url
 
 SCHEMA_VERSION = 1
 

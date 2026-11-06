@@ -2,8 +2,8 @@ import math
 import os
 from datetime import datetime, timedelta, timezone
 
-from wings_x.errors import XError
-from wings_x.parse import iso_z
+from fav.errors import XError
+from fav.parse import iso_z
 
 KINDS = ("post_read", "owned_read", "user_read", "media_read")
 STALE_AFTER = timedelta(minutes=10)

@@ -9,11 +9,11 @@ import unittest
 from urllib.parse import parse_qs, urlsplit
 
 from tests.helpers import SCOPE, Clock, FakeTransport, TempHome, response, write_config, write_token
-from wings_x import auth
-from wings_x import config as cfg
-from wings_x import paths
-from wings_x.client import TransportError
-from wings_x.errors import XError
+from fav import auth
+from fav import config as cfg
+from fav import paths
+from fav.client import TransportError
+from fav.errors import XError
 
 TOKEN_OK = {"token_type": "bearer", "expires_in": 7200, "access_token": "tok-2", "scope": SCOPE,
             "refresh_token": "refresh-2"}

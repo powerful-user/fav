@@ -5,8 +5,8 @@ from unittest import mock
 
 from tests.helpers import Clock, FakeTransport, TempHome, page, raw_post, response, write_config, write_token
 from tests.media_helpers import GIF, PHOTO, PHOTO_4A, lookup, pending, photo, stored
-from wings_x import bookmarks as bm
-from wings_x import commands, media
+from fav import bookmarks as bm
+from fav import commands, media
 
 SEEDED = "2026-10-01T00:00:00Z"
 BOOKMARKS = "/2/users/7/bookmarks"

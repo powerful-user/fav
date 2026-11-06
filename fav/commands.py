@@ -6,16 +6,16 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Callable, Mapping
 
-from wings_x import media, normalize
-from wings_x.auth import Auth
-from wings_x.budget import KINDS, Budget
-from wings_x.client import XClient
-from wings_x.config import Config, load_config
-from wings_x.errors import XError, local_io_error
-from wings_x.parse import iso_z, parse_date, parse_post_ref, parse_since, parse_user_ref
-from wings_x.paths import Paths, ensure_dirs, resolve_paths
-from wings_x.store import Store
-from wings_x.users import resolve_authors
+from fav import media, normalize
+from fav.auth import Auth
+from fav.budget import KINDS, Budget
+from fav.client import XClient
+from fav.config import Config, load_config
+from fav.errors import XError, local_io_error
+from fav.parse import iso_z, parse_date, parse_post_ref, parse_since, parse_user_ref
+from fav.paths import Paths, ensure_dirs, resolve_paths
+from fav.store import Store
+from fav.users import resolve_authors
 
 TWEET_FIELDS = "attachments,author_id,conversation_id,created_at,lang,public_metrics,referenced_tweets"
 USER_FIELDS = "created_at,description,name,public_metrics,username"
@@ -518,7 +518,7 @@ def bookmarks_search(ctx, query: str, *, from_user: str | None = None, since: st
                      until: str | None = None, folder: str | None = None, limit: int | None = None,
                      include_removed: bool = False) -> dict:
     # Imported here: wings_x.bookmarks imports this module.
-    from wings_x import bookmarks
+    from fav import bookmarks
 
     text = query.strip() if isinstance(query, str) else ""
     if not text:
@@ -538,7 +538,7 @@ def bookmarks_search(ctx, query: str, *, from_user: str | None = None, since: st
 
 def bookmarks_list(ctx, *, folder: str | None = None, limit: int | None = None, offset: int = 0,
                    include_removed: bool = False) -> dict:
-    from wings_x import bookmarks
+    from fav import bookmarks
 
     limit = _whole(BOOKMARK_LIMIT_DEFAULT if limit is None else limit, 1, BOOKMARK_LIMIT_MAX, "--limit")
     offset = _whole(offset, 0, BOOKMARK_OFFSET_MAX, "--offset")

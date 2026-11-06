@@ -7,9 +7,9 @@ from unittest import mock
 
 from tests.helpers import (CONFIG_TOML, NOW, TWEET_FIELDS, Clock, FakeTransport, TempHome, page, raw_post, response,
                            users_response, write_config, write_token)
-from wings_x import bookmarks as bm
-from wings_x import commands, normalize
-from wings_x.errors import XError
+from fav import bookmarks as bm
+from fav import commands, normalize
+from fav.errors import XError
 
 SEEDED = "2026-10-01T00:00:00Z"
 

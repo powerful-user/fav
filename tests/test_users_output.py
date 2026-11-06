@@ -3,12 +3,12 @@ import unittest
 from datetime import datetime, timezone
 
 from tests.helpers import Clock, FakeTransport, TempHome, response, users_response, write_config
-from wings_x import budget as bd
-from wings_x import client as cl
-from wings_x import config as cfg
-from wings_x import output, paths, users
-from wings_x import store as st
-from wings_x.errors import XError
+from fav import budget as bd
+from fav import client as cl
+from fav import config as cfg
+from fav import output, paths, users
+from fav import store as st
+from fav.errors import XError
 
 
 class UsersTest(TempHome):

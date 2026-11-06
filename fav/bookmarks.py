@@ -6,11 +6,11 @@ from contextlib import closing, contextmanager
 from datetime import datetime
 from typing import Mapping
 
-from wings_x import commands, media
-from wings_x.errors import XError, local_io_error
-from wings_x.parse import iso_z, post_url
-from wings_x.store import BOOKMARK_FTS_ARGS, Store
-from wings_x.users import resolve_authors
+from fav import commands, media
+from fav.errors import XError, local_io_error
+from fav.parse import iso_z, post_url
+from fav.store import BOOKMARK_FTS_ARGS, Store
+from fav.users import resolve_authors
 
 STOP_RUN = 10
 WINDOW = 800

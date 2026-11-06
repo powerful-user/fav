@@ -9,9 +9,9 @@ from datetime import datetime, timezone
 from typing import Mapping
 from urllib.parse import urlencode
 
-from wings_x import __version__
-from wings_x.errors import XError
-from wings_x.parse import iso_z
+from fav import __version__
+from fav.errors import XError
+from fav.parse import iso_z
 
 Response = namedtuple("Response", "status headers body")
 

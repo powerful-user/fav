@@ -3,8 +3,8 @@ import unittest
 
 from tests.helpers import NOW, page, raw_post, response, write_token
 from tests.test_bookmarks_sync import SyncBase
-from wings_x import bookmarks as bm
-from wings_x.errors import XError
+from fav import bookmarks as bm
+from fav.errors import XError
 
 
 class PageBoundsTest(SyncBase):

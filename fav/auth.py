@@ -11,11 +11,11 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from urllib.parse import parse_qs, urlencode, urlsplit
 
-from wings_x import __version__
-from wings_x.client import TIMEOUT, TransportError
-from wings_x.errors import XError, local_io_error
-from wings_x.parse import iso_z
-from wings_x.paths import atomic_write
+from fav import __version__
+from fav.client import TIMEOUT, TransportError
+from fav.errors import XError, local_io_error
+from fav.parse import iso_z
+from fav.paths import atomic_write
 
 REQUIRED_SCOPES = ("tweet.read", "users.read", "bookmark.read", "offline.access")
 AUTHORIZE_URL = "https://x.com/i/oauth2/authorize"

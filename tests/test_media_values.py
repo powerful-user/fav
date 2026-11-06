@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime, timezone
 
-from wings_x import media, output
+from fav import media, output
 
 NOW = datetime(2026, 10, 2, 15, 0, tzinfo=timezone.utc)
 

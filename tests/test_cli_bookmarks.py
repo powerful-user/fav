@@ -4,8 +4,8 @@ import unittest
 
 from tests.helpers import page, raw_post, response, users_response
 from tests.test_cli import CliBase
-from wings_x import paths
-from wings_x import store as st
+from fav import paths
+from fav import store as st
 
 
 class BookmarkCliTest(CliBase):

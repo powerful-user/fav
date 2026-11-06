@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 from tests.helpers import response
 from tests.test_cli import CliBase
-from wings_x import output
+from fav import output
 
 NOW = datetime(2026, 10, 2, 15, 0, tzinfo=timezone.utc)
 

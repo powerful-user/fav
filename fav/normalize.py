@@ -1,6 +1,6 @@
 from typing import Mapping
 
-from wings_x.parse import iso_z, parse_date, post_url
+from fav.parse import iso_z, parse_date, post_url
 
 _ORIGINS = ("live", "bookmark")
 

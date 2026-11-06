@@ -4,7 +4,7 @@ import sys
 import tomllib
 from dataclasses import dataclass
 
-from wings_x.errors import XError
+from fav.errors import XError
 
 _CONFIG_KEYS = {
     "client_id",

@@ -3,9 +3,9 @@ import math
 from datetime import datetime
 from urllib.parse import urlsplit
 
-from wings_x.errors import XError
-from wings_x.media import is_pending
-from wings_x.parse import parse_date
+from fav.errors import XError
+from fav.media import is_pending
+from fav.parse import parse_date
 
 _UNAVAILABLE_MARKERS = {"deleted": "[deleted on X]", "protected": "[protected on X]"}
 _STATE_MARKERS = {"beyond_window": "[beyond X's 800 window]", "removed": "[removed]"}

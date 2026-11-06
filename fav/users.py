@@ -1,8 +1,8 @@
 import re
 from datetime import datetime
 
-from wings_x.errors import XError
-from wings_x.parse import iso_z
+from fav.errors import XError
+from fav.parse import iso_z
 
 BATCH = 100
 USER_FIELDS = "name,username"

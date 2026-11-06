@@ -12,8 +12,8 @@ from unittest import mock
 from tests.helpers import (CONFIG_TOML, SCOPE, Clock, FakeTransport, TempHome, config_dir, fixture, page, raw_post,
                            response, users_response, write_config, write_token)
 from tests.media_helpers import lookup
-from wings_x import cli
-from wings_x.errors import XError
+from fav import cli
+from fav.errors import XError
 
 TOKEN_OK = {"token_type": "bearer", "expires_in": 7200, "access_token": "tok-2", "scope": SCOPE,
             "refresh_token": "refresh-2"}
@@ -126,7 +126,7 @@ class CliTest(CliBase):
     def test_auth_login_paste_back(self):
         os.remove(self.token_path())
         self.transport.push(response(200, TOKEN_OK), response(200, ME))
-        with mock.patch("wings_x.auth.new_state", return_value="state-1"):
+        with mock.patch("fav.auth.new_state", return_value="state-1"):
             code, out, err = self.run_cli("auth", "login",
                                           stdin="http://127.0.0.1:8765/callback?state=state-1&code=abc\n")
         self.assertEqual(code, 0, err)
@@ -142,7 +142,7 @@ class CliTest(CliBase):
     def test_auth_login_json(self):
         os.remove(self.token_path())
         self.transport.push(response(200, TOKEN_OK), response(200, ME))
-        with mock.patch("wings_x.auth.new_state", return_value="state-1"):
+        with mock.patch("fav.auth.new_state", return_value="state-1"):
             code, out, err = self.run_cli("auth", "login", "--json",
                                           stdin="http://127.0.0.1:8765/callback?state=state-1&code=abc\n")
         self.assertEqual(code, 0, err)
@@ -171,7 +171,7 @@ class CliTest(CliBase):
 
     def test_auth_login_bad_paste(self):
         os.remove(self.token_path())
-        with mock.patch("wings_x.auth.new_state", return_value="state-1"):
+        with mock.patch("fav.auth.new_state", return_value="state-1"):
             code, _, err = self.run_cli("auth", "login", stdin="http://127.0.0.1:8765/callback?state=evil&code=abc\n")
         self.assertEqual(code, 1)
         self.assertIn("X_BAD_INPUT", err)
@@ -270,7 +270,7 @@ class CliTest(CliBase):
         self.assertIn("X_CONFIG", err)
 
     def test_environment_check(self):
-        with mock.patch("wings_x.config.check_environment", side_effect=XError("X_ENVIRONMENT", "old")):
+        with mock.patch("fav.config.check_environment", side_effect=XError("X_ENVIRONMENT", "old")):
             code, _, err = self.run_cli("search", "agents")
         self.assertEqual(code, 1)
         self.assertIn("X_ENVIRONMENT", err)
@@ -292,7 +292,7 @@ class LoopbackTest(CliBase):
 
     def login(self, stdin="", timeout=10.0):
         out, err = io.StringIO(), io.StringIO()
-        with mock.patch("wings_x.auth.new_state", return_value="state-1"):
+        with mock.patch("fav.auth.new_state", return_value="state-1"):
             code = cli.main(["auth", "login"], env=self.env, stdout=out, stderr=err, stdin=io.StringIO(stdin),
                             transport=self.transport, now_fn=self.clock, sleep=lambda s: None, loopback=True,
                             login_timeout=timeout)

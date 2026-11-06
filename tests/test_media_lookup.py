@@ -5,8 +5,8 @@ from tests.helpers import (CONFIG_TOML, NOW, Clock, FakeTransport, TempHome, fix
                            users_response, write_config, write_token)
 from tests.media_helpers import (GIF, MEDIA_FIELDS, PHOTO, PHOTO_4A, VIDEO, charge, lookup, not_found, pending,
                                  photo, raw_photo, stored)
-from wings_x import budget as bd
-from wings_x import commands, media
+from fav import budget as bd
+from fav import commands, media
 
 
 class LookupBase(TempHome):

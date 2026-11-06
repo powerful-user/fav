@@ -3,8 +3,8 @@ import sys
 import unittest
 
 from tests.helpers import TempHome, write_config
-from wings_x import config as cfg
-from wings_x.errors import XError
+from fav import config as cfg
+from fav.errors import XError
 
 
 class _NoFtsConn:

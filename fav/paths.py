@@ -3,7 +3,7 @@ import tempfile
 from dataclasses import dataclass
 from typing import Mapping
 
-from wings_x.errors import XError, local_io_error
+from fav.errors import XError, local_io_error
 
 
 @dataclass(frozen=True)

@@ -3,10 +3,10 @@ import unittest
 
 from tests.helpers import NOW, TempHome, fixture
 from tests.media_helpers import GIF, PHOTO, PHOTO_4A, VIDEO, pending, photo, stored
-from wings_x import bookmarks as bm
-from wings_x import media, paths
-from wings_x import store as st
-from wings_x.errors import XError
+from fav import bookmarks as bm
+from fav import media, paths
+from fav import store as st
+from fav.errors import XError
 
 UNAVAILABLE_4B = {"key": "3_4b", "unavailable": True}
 

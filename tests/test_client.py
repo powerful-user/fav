@@ -5,12 +5,12 @@ import urllib.request
 from unittest import mock
 
 from tests.helpers import CONFIG_TOML, Clock, FakeResponse, FakeTransport, TempHome, response, write_config
-from wings_x import budget as bd
-from wings_x import client as cl
-from wings_x import config as cfg
-from wings_x import paths
-from wings_x import store as st
-from wings_x.errors import XError
+from fav import budget as bd
+from fav import client as cl
+from fav import config as cfg
+from fav import paths
+from fav import store as st
+from fav.errors import XError
 
 
 class ClientTest(TempHome):

@@ -2,8 +2,8 @@
 import json
 import re
 
-from wings_x import normalize
-from wings_x.errors import XError
+from fav import normalize
+from fav.errors import XError
 
 MEDIA_FIELDS = "media_key,type,url,preview_image_url,width,height,alt_text,duration_ms,variants"
 LOOKUP_BATCH = 100

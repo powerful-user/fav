@@ -3,10 +3,10 @@ from datetime import datetime, timezone
 from unittest import mock
 
 from tests.helpers import NOW, TempHome
-from wings_x import bookmarks as bm
-from wings_x import normalize, paths
-from wings_x import store as st
-from wings_x.errors import XError
+from fav import bookmarks as bm
+from fav import normalize, paths
+from fav import store as st
+from fav.errors import XError
 
 SEEDED = "2026-10-01T00:00:00Z"
 

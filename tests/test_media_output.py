@@ -5,8 +5,8 @@ from datetime import datetime, timezone
 
 from tests.helpers import Clock, FakeTransport, TempHome, fixture, response, users_response, write_config, write_token
 from tests.media_helpers import GIF, PHOTO, VIDEO, charge, lookup, pending
-from wings_x import cli, output, paths
-from wings_x import store as st
+from fav import cli, output, paths
+from fav import store as st
 
 NOW = datetime(2026, 10, 2, 15, 0, tzinfo=timezone.utc)
 HEAD = "@example · 2026-10-02 12:00Z · live · https://x.com/example/status/123\n"

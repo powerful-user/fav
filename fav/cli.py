@@ -14,13 +14,13 @@ from datetime import datetime, timezone
 from typing import Mapping
 from urllib.parse import parse_qs, urlsplit
 
-from wings_x import auth as auth_mod
-from wings_x import bookmarks as bookmarks_mod
-from wings_x import commands
-from wings_x import config as config_mod
-from wings_x import output
-from wings_x.client import UrllibTransport
-from wings_x.errors import EXIT_ERROR, EXIT_OK, EXIT_USAGE, XError
+from fav import auth as auth_mod
+from fav import bookmarks as bookmarks_mod
+from fav import commands
+from fav import config as config_mod
+from fav import output
+from fav.client import UrllibTransport
+from fav.errors import EXIT_ERROR, EXIT_OK, EXIT_USAGE, XError
 
 LOOPBACK_HOST = "127.0.0.1"
 FIRST_SEEN = ("first_seen_at is when sync first saw a bookmark, not when it was bookmarked; "

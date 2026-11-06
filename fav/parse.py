@@ -2,7 +2,7 @@ import re
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlsplit
 
-from wings_x.errors import XError
+from fav.errors import XError
 
 _STATUS_HOSTS = {
     "x.com",

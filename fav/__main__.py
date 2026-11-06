@@ -1,7 +1,7 @@
 def main(argv=None):
     import sys
 
-    from wings_x import cli
+    from fav import cli
 
     if argv is None:
         argv = sys.argv[1:]

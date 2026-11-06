@@ -4,11 +4,11 @@ import unittest
 from datetime import datetime
 
 from tests.helpers import Clock, TempHome, write_config
-from wings_x import budget as bd
-from wings_x import config as cfg
-from wings_x import paths
-from wings_x import store as st
-from wings_x.errors import XError
+from fav import budget as bd
+from fav import config as cfg
+from fav import paths
+from fav import store as st
+from fav.errors import XError
 
 
 def _process_worker(env, inv, barrier, results):

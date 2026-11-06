@@ -4,8 +4,8 @@ import unittest
 from tests.helpers import (TWEET_FIELDS, Clock, FakeTransport, TempHome, fixture, page, raw_post, response,
                            users_response, write_config, write_token)
 from tests.media_helpers import lookup
-from wings_x import commands, paths
-from wings_x.errors import XError
+from fav import commands, paths
+from fav.errors import XError
 
 
 class CommandsBase(TempHome):

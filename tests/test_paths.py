@@ -7,8 +7,8 @@ import unittest
 from unittest import mock
 
 from tests.helpers import TempHome
-from wings_x import paths
-from wings_x.errors import CODES, EXIT_ERROR, EXIT_OK, EXIT_USAGE, XError, local_io_error
+from fav import paths
+from fav.errors import CODES, EXIT_ERROR, EXIT_OK, EXIT_USAGE, XError, local_io_error
 
 
 class PathsTest(TempHome):
@@ -82,7 +82,7 @@ class PathsTest(TempHome):
         def one_byte(fd, data):
             return real_write(fd, bytes(data)[:1])
 
-        with mock.patch("wings_x.paths.os.write", one_byte):
+        with mock.patch("fav.paths.os.write", one_byte):
             paths.atomic_write(target, payload)
         with open(target, "rb") as fh:
             self.assertEqual(fh.read(), payload)
@@ -97,7 +97,7 @@ class PathsTest(TempHome):
         def no_progress(fd, data):
             return 0
 
-        with mock.patch("wings_x.paths.os.write", no_progress):
+        with mock.patch("fav.paths.os.write", no_progress):
             with self.assertRaises(OSError):
                 paths.atomic_write(target, b"secret-token")
         with open(target, "rb") as fh:
@@ -120,8 +120,8 @@ class PathsTest(TempHome):
         def boom(path, mode):
             raise OSError("chmod failed")
 
-        with mock.patch("wings_x.paths.tempfile.mkstemp", spy_mkstemp):
-            with mock.patch("wings_x.paths.os.chmod", boom):
+        with mock.patch("fav.paths.tempfile.mkstemp", spy_mkstemp):
+            with mock.patch("fav.paths.os.chmod", boom):
                 with self.assertRaises(OSError):
                     paths.atomic_write(target, b"new")
         self.assertEqual(sorted(os.listdir(p.config_dir)), ["secret"])

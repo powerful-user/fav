@@ -6,8 +6,8 @@ from datetime import datetime, timezone
 from unittest import mock
 
 from tests.helpers import NOW, TempHome
-from wings_x import paths
-from wings_x import store as st
+from fav import paths
+from fav import store as st
 
 POST = {
     "id": "1001",
@@ -173,7 +173,7 @@ class StoreTest(TempHome):
 
     def test_init_closes_connection_when_migrate_fails(self):
         _path, captured, capture = self._open_fails_and_closes(sqlite3.connect)
-        with mock.patch("wings_x.store.sqlite3.connect", capture):
+        with mock.patch("fav.store.sqlite3.connect", capture):
             with mock.patch.object(st.Store, "_migrate", side_effect=RuntimeError("migrate failed")):
                 with self.assertRaises(RuntimeError) as ctx:
                     st.Store(_path.db_file)
@@ -210,7 +210,7 @@ class StoreTest(TempHome):
             return Proxy(conn)
 
         _path, _captured, capture = self._open_fails_and_closes(connect)
-        with mock.patch("wings_x.store.sqlite3.connect", capture):
+        with mock.patch("fav.store.sqlite3.connect", capture):
             with self.assertRaises(sqlite3.OperationalError) as ctx:
                 st.Store(_path.db_file)
         self.assertEqual(str(ctx.exception), "pragma failed")

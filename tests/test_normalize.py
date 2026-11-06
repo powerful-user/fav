@@ -2,7 +2,7 @@ import json
 import unittest
 
 from tests.helpers import fixture
-from wings_x import normalize
+from fav import normalize
 
 EXAMPLE = {"id": "42", "username": "example", "display_name": "Example"}
 OTHER = {"id": "44", "username": "other", "display_name": "Other"}

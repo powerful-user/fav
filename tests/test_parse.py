@@ -2,8 +2,8 @@ import sys
 import unittest
 from datetime import datetime, timedelta, timezone
 
-from wings_x import parse
-from wings_x.errors import XError
+from fav import parse
+from fav.errors import XError
 
 NOW = datetime(2026, 10, 2, 12, 0, tzinfo=timezone.utc)
 
