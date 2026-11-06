@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 from typing import Mapping
 from urllib.parse import parse_qs, urlsplit
 
+from fav import __version__
 from fav import auth as auth_mod
 from fav import bookmarks as bookmarks_mod
 from fav import commands
@@ -45,6 +46,7 @@ def _parser():
                           help="extra spend allowed for this invocation above the daily ceiling")
 
     parser = argparse.ArgumentParser(prog="fav", description="Read-only access to X for agents.")
+    parser.add_argument("--version", action="version", version="fav " + __version__)
     sub = parser.add_subparsers(dest="command", metavar="command", required=True)
 
     auth = sub.add_parser("auth", help="sign in, check, or sign out")
