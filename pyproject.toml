@@ -1,0 +1,54 @@
+[build-system]
+requires = ["hatchling", "hatch-fancy-pypi-readme"]
+build-backend = "hatchling.build"
+
+[project]
+name = "fav"
+description = "A read-only, spend-capped command line for X, built for agents."
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+dynamic = ["version", "readme"]
+keywords = ["x", "twitter", "cli", "agents", "bookmarks"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[project.urls]
+Homepage = "https://github.com/service-dept/fav"
+Repository = "https://github.com/service-dept/fav"
+Issues = "https://github.com/service-dept/fav/issues"
+
+[project.scripts]
+fav = "fav.__main__:main"
+
+[tool.hatch.version]
+path = "fav/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+include = ["fav"]
+
+[tool.hatch.build.targets.sdist]
+include = ["fav", "tests", "README.md", "LICENSE"]
+
+# PyPI can't resolve the README's relative links, so point them at GitHub.
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/markdown"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.md"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = '\]\(LICENSE\)'
+replacement = '](https://github.com/service-dept/fav/blob/main/LICENSE)'
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = '\]\(skills/'
+replacement = '](https://github.com/service-dept/fav/blob/main/skills/'

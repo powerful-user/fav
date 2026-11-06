@@ -157,3 +157,18 @@ def users_response(*pairs):
 
 # The project's old name, assembled so no file under tests/ contains it.
 OLD_NAME = "w" + "ings"
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def from_source_tree():
+    """True when fav is imported from this checkout, False when it is an installed package."""
+    import fav
+
+    package = os.path.realpath(os.path.dirname(os.path.abspath(fav.__file__)))
+    return package == os.path.realpath(os.path.join(ROOT, "fav"))
+
+
+# Tests that read files outside fav/ and tests/. The installed-package CI job
+# copies only tests/, and imports fav from a virtualenv.
+source_tree_only = unittest.skipUnless(from_source_tree(), "needs the source tree; fav is installed")
