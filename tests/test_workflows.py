@@ -75,8 +75,18 @@ class PublishWorkflowTest(unittest.TestCase):
         shim = tempfile.mkdtemp(prefix="fav-shim-")
         self.addCleanup(shutil.rmtree, shim, True)
         os.symlink(sys.executable, os.path.join(shim, "python"))
-        env = {"PATH": shim + os.pathsep + os.environ.get("PATH", ""), "TAG": tag}
-        return subprocess.run(["bash", "-c", match.group(1)], cwd=ROOT, env=env).returncode
+        env = {"PATH": shim + os.pathsep + os.environ.get("PATH", ""), "TAG": tag,
+               "PYTHONDONTWRITEBYTECODE": "1"}
+        before = self.bytecode()
+        code = subprocess.run(["bash", "-c", match.group(1)], cwd=ROOT, env=env).returncode
+        # The check imports fav from the checkout; it must leave no bytecode there.
+        self.assertEqual(self.bytecode(), before)
+        return code
+
+    @staticmethod
+    def bytecode():
+        cache = os.path.join(ROOT, "fav", "__pycache__")
+        return sorted(os.listdir(cache)) if os.path.isdir(cache) else []
 
     def test_tag_check_passes_on_match(self):
         self.assertEqual(self.tag_check("v" + fav.__version__), 0)
