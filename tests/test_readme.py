@@ -43,6 +43,12 @@ class ReadmeTest(unittest.TestCase):
                      "tweet.read", "users.read", "bookmark.read", "offline.access", "fav auth app-token",
                      "spending limit"):
             self.assertIn(line, part)
+        # fav creates the config directory only when a command runs, after the file is needed.
+        self.assertIn("mkdir -p -m 700 ~/.config/fav", part)
+        self.assertIn("$XDG_CONFIG_HOME/fav", part)
+        # Login prints the authorization URL; it does not open a browser itself.
+        self.assertNotIn("opens a browser", self.text)
+        self.assertNotIn("login in a browser", self.text)
 
     def test_commands_and_spending(self):
         for line in ("--json", "--budget", "last sync"):
@@ -60,6 +66,8 @@ class ReadmeTest(unittest.TestCase):
         part = self.part("Files")
         for line in ("~/.config/fav", "~/.local/state/fav", "0600"):
             self.assertIn(line, part)
+        # fav never changes the mode of the config.toml the user writes.
+        self.assertNotIn("The files inside are mode", part)
         part = self.part("Development")
         self.assertIn("python -B -m unittest discover -s tests -t .", part)
         self.assertIn("FAV_LIVE=1 tests/live_smoke.sh", part)

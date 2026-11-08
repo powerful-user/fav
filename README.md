@@ -32,13 +32,17 @@ http://127.0.0.1:8765/callback
 
 That is fav's default. To use another callback, set `redirect_uri` in the config file to the same URL you allowlisted.
 
-Write `~/.config/fav/config.toml` with the Client ID. `client_id` is the only required key:
+Create the config directory, then write `~/.config/fav/config.toml` with the Client ID. When `XDG_CONFIG_HOME` is set, the directory is `$XDG_CONFIG_HOME/fav` instead. `client_id` is the only required key:
+
+```
+mkdir -p -m 700 ~/.config/fav
+```
 
 ```toml
 client_id = "your client id"
 ```
 
-Then sign in. This opens a browser and asks X for exactly these four scopes: `tweet.read`, `users.read`, `bookmark.read`, `offline.access`.
+Then sign in. `fav auth login` prints an authorization URL that asks X for exactly these four scopes: `tweet.read`, `users.read`, `bookmark.read`, `offline.access`. Open it in your browser and approve. fav receives X's redirect on the callback URL; if it cannot, paste the redirect URL from the address bar when it asks.
 
 ```
 fav auth login
@@ -58,7 +62,7 @@ fav auth app-token
 
 | Command | Calls X | What it does |
 |---|---|---|
-| `fav auth login` | yes | PKCE login in a browser |
+| `fav auth login` | yes | PKCE login: prints the URL to open, then takes the redirect |
 | `fav auth app-token` | no | Store the app bearer token used by `usage` |
 | `fav auth status` | yes | Signed-in account, scopes, token expiry, whether an app token is stored |
 | `fav auth logout` | yes | Revoke the user token at X and delete it locally |
@@ -113,7 +117,7 @@ Claude Code reads a personal skill from `~/.claude/skills/x-research/SKILL.md` (
 
 ## Files
 
-fav keeps secrets and the bookmark index in two directories, created mode `0700`. The files inside are mode `0600`.
+fav keeps secrets and the bookmark index in two directories. It creates them, or resets them to, mode `0700`, and writes the files it creates mode `0600`. You write `config.toml` yourself, and it keeps the mode you give it.
 
 | Directory | Default | Files |
 |---|---|---|
