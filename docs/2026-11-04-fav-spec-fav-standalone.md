@@ -3,7 +3,7 @@ title: "fav: wings-x as a standalone package and skill"
 kind: spec
 target: fav
 topic: fav-standalone
-status: approved
+status: draft
 written: 2026-11-04T22:04:49Z
 by: claude
 worktree: /home/jmo/linda/repos/fav/.worktrees/spec-fav-standalone
@@ -271,6 +271,9 @@ any user:
 - Step 1's "repeating a call that reaches X pays again" becomes: a
   repeated call can be charged again (X deduplicates some repeats within
   a UTC day, but not reliably), so decide on `--json` before the call.
+- The error step's "(it opens a browser)", said of `auth login`, becomes
+  "(it prints a URL to open in a browser)": `fav auth login` opens no
+  browser itself.
 - The frontmatter description keeps its triggers: posts, threads, users or
   bookmarks from X, and what someone said or bookmarked there.
 - A new first step: when `fav` is not on PATH, or `fav --version` is below

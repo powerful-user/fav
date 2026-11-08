@@ -3,7 +3,7 @@ title: "fav: implementation plan"
 kind: plan
 target: fav
 topic: fav-standalone
-status: approved
+status: draft
 written: 2026-11-05T23:10:36Z
 by: claude
 worktree: /home/jmo/linda/repos/fav/.worktrees/spec-fav-standalone
@@ -757,6 +757,9 @@ class SkillTest(unittest.TestCase):
     def test_repeat_charge_wording(self):
         self.assertIn("can be charged again", self.body)
         self.assertNotIn("pays again", self.body)
+        # fav auth login prints a URL; it does not open a browser.
+        self.assertIn("(it prints a URL to open in a browser)", self.body)
+        self.assertNotIn("opens a browser", self.body)
 
     def test_command_table(self):
         for command in ('fav bookmarks search "<words>"', "fav bookmarks list", 'fav search "<query>" --limit 10',
@@ -809,6 +812,7 @@ ModuleNotFoundError: No module named 'fav'
   - A new step 1 comes first, and the old steps 1–5 become 2–6. When `fav` is not on PATH, or `fav --version` prints a version below 0.1.0, give the three install commands (`pipx install fav`, `uv tool install fav`, `brew install service-dept/tap/fav`). Point a user with no X developer app at the setup section of the README (`https://github.com/service-dept/fav#set-up-your-x-app`), then stop without reaching X another way.
   - The old step 1's "decide before the call: repeating a call that reaches X pays again" becomes "decide before the call: a repeated call can be charged again (X deduplicates some repeats within a UTC day, but not reliably)".
   - The old step 2's "wings-x does not show when the last one ran" becomes "fav does not show when the last one ran".
+  - The old step 4's "runs `wings-x auth login` in their own terminal (it opens a browser)" becomes "runs `fav auth login` in their own terminal (it prints a URL to open in a browser)". `_login` in `fav/cli.py` prints the authorization URL and waits for the redirect; it opens no browser.
   - The Never list's last-but-one rule becomes "Run `fav auth` subcommands, or read or edit fav's config, token or index files."
   - The frontmatter description becomes "Use when a task needs posts, threads, users or bookmarks from X (Twitter), including a question about what someone said on X or what the user bookmarked there".
 - `skills/x-research/tests/scenarios.md` is new. It opens with a heading, `# x-research pressure scenarios`, and a short paragraph on how they are run, taken from the top of Wings' `skills/tests/scenarios.md` but without the Wings-specific setup. Next comes the x-research setup paragraph, with `a fake \`wings-x\`` becoming `a fake \`fav\``, the real `wings-x` becoming the real `fav`, and "the operator's account" becoming "the user's account".
