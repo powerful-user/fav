@@ -754,7 +754,7 @@ class SkillTest(unittest.TestCase):
                         "brew install service-dept/tap/fav", "README"):
             self.assertIn(command, step)
 
-    def test_repeat_charge_wording(self):
+    def test_reworded_lines(self):
         self.assertIn("can be charged again", self.body)
         self.assertNotIn("pays again", self.body)
         # fav auth login prints a URL; it does not open a browser.
@@ -823,6 +823,8 @@ ModuleNotFoundError: No module named 'fav'
 
 **Commit:** `feat(skill): add the x-research skill for fav`.
 
+**Amended during the build (2026-11-08).** Task 7 was built at `29eb873` before the login line and the `test_reworded_lines` name were added. On that tree the driver applies them as a fix: the red is `python3 -B -m unittest tests.test_skill` failing in `test_reworded_lines` on the `assertIn` for "(it prints a URL to open in a browser)", once the method is renamed and the two assertions added. The suite stays at 449 tests. Commit: `fix(skill): say that auth login prints a URL to open`.
+
 ### Task 8: README
 
 **Files:** `tests/test_readme.py` (new); `README.md`.
@@ -874,6 +876,12 @@ class ReadmeTest(unittest.TestCase):
                      "tweet.read", "users.read", "bookmark.read", "offline.access", "fav auth app-token",
                      "spending limit"):
             self.assertIn(line, part)
+        # fav creates the config directory only when a command runs, after the file is needed.
+        self.assertIn("mkdir -p -m 700 ~/.config/fav", part)
+        self.assertIn("$XDG_CONFIG_HOME/fav", part)
+        # Login prints the authorization URL; it does not open a browser itself.
+        self.assertNotIn("opens a browser", self.text)
+        self.assertNotIn("login in a browser", self.text)
 
     def test_commands_and_spending(self):
         for line in ("--json", "--budget", "last sync"):
@@ -891,6 +899,8 @@ class ReadmeTest(unittest.TestCase):
         part = self.part("Files")
         for line in ("~/.config/fav", "~/.local/state/fav", "0600"):
             self.assertIn(line, part)
+        # fav never changes the mode of the config.toml the user writes.
+        self.assertNotIn("The files inside are mode", part)
         part = self.part("Development")
         self.assertIn("python -B -m unittest discover -s tests -t .", part)
         self.assertIn("FAV_LIVE=1 tests/live_smoke.sh", part)
@@ -937,16 +947,19 @@ ModuleNotFoundError: No module named 'fav'
 
 - **Intro.** It names the three questions an agent can now answer, and says, in those words, that fav is unofficial and not affiliated with X.
 - **Install.** It explains `X_ENVIRONMENT` (the error when SQLite lacks FTS5 or Python is older than 3.11).
-- **Set up your X app.** Take the console's labels (project, app, user authentication settings, app type, callback URI, spending limit) from X's developer documentation (`docs.x.com`) and cite the pages in the closing report.
+- **Set up your X app.** Take the console's labels (project, app, user authentication settings, app type, callback URI, spending limit) from X's developer documentation (`docs.x.com`) and cite the pages in the closing report. Before the user writes `config.toml`, give `mkdir -p -m 700 ~/.config/fav` and say the directory is `$XDG_CONFIG_HOME/fav` when that variable is set: fav creates its directories only when a command runs, and every command needs the file first. Say that `fav auth login` prints an authorization URL to open in a browser and takes the redirect on the callback URL or as a pasted URL; it opens no browser.
 - **With an agent.** It links `skills/x-research/SKILL.md` relatively. Check the skills directory it names for Claude Code (`~/.claude/skills/`) and Codex against each tool's own documentation, and cite the pages. Where a CLI's documentation names no user skills directory, leave that CLI out rather than guessing.
 - **Commands.** The command table is wings-x's (`/home/jmo/linda/repos/x-runtime/README.md` and its spec), renamed.
 - **Spending.** The prices come from `fav/config.py`'s defaults.
+- **Files.** fav creates the two directories, or resets them to, mode `0700` (`ensure_dirs` in `fav/paths.py`), and writes the files it creates mode `0600`. The user writes `config.toml`, and it keeps the user's mode.
 - **License.** It links `LICENSE` relatively.
 - **No person.** The README names no person.
 
 **Checks:** the whole suite: 449 tests, OK, on both interpreters. The closing report lists each documentation page used and anything it could not confirm.
 
 **Commit:** `docs: write the README`.
+
+**Amended during the build (2026-11-08).** The README's config-directory step, login wording and Files mode text, with the test lines that pin them, were added after review as `420f0e6` (`docs: correct the README's first-run setup and login steps`). A build from scratch writes them as part of this task.
 
 ### Task 9: Homebrew formula at 0.1.0a1
 

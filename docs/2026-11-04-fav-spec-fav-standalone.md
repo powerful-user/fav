@@ -298,8 +298,10 @@ any user:
    of a free tier; why owning the app makes bookmark reads cheaper;
    setting a console spending limit; creating a project and app with
    OAuth 2.0 as a public (native) client and callback
-   `http://127.0.0.1:8765/callback`; a minimal `~/.config/fav/config.toml`
-   (only `client_id` required); `fav auth login` and its four scopes;
+   `http://127.0.0.1:8765/callback`; creating `~/.config/fav`
+   (`$XDG_CONFIG_HOME/fav` when set) mode 0700, then a minimal
+   `config.toml` in it (only `client_id` required); `fav auth login`,
+   which prints a URL to open in a browser, and its four scopes;
    optional `fav auth app-token` for `fav usage`. Console labels are
    checked against X's documentation when the README is written.
 4. Commands: the wings-x command table, renamed, plus `--json`,
@@ -314,7 +316,8 @@ any user:
    and copy or link it into the agent's skills directory, for Claude
    Code, Codex and other CLIs that read `SKILL.md`. Each CLI's skills path
    is checked against its documentation.
-7. Files: the config and state directories and their mode 0600 files.
+7. Files: the config and state directories, mode 0700, and the files fav
+   writes in them, mode 0600; `config.toml` keeps the mode its user gives it.
 8. Development: `python -B -m unittest discover -s tests -t .`, and
    `FAV_LIVE=1 tests/live_smoke.sh` with its warning that it spends real
    credits.
