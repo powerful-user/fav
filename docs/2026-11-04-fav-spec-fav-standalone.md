@@ -3,11 +3,11 @@ title: "fav: wings-x as a standalone package and skill"
 kind: spec
 target: fav
 topic: fav-standalone
-status: draft
+status: approved
 written: 2026-11-04T22:04:49Z
 by: claude
 worktree: /home/jmo/linda/repos/fav/.worktrees/spec-fav-standalone
-approved_at: 2026-11-05T22:52:45Z
+approved_at: 2026-11-08T06:28:26Z
 approved_by: josh
 ---
 

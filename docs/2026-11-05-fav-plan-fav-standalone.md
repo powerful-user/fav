@@ -3,11 +3,11 @@ title: "fav: implementation plan"
 kind: plan
 target: fav
 topic: fav-standalone
-status: draft
+status: approved
 written: 2026-11-05T23:10:36Z
 by: claude
 worktree: /home/jmo/linda/repos/fav/.worktrees/spec-fav-standalone
-approved_at: 2026-11-06T02:26:24Z
+approved_at: 2026-11-08T06:28:26Z
 approved_by: josh
 ---
 
