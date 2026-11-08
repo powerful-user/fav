@@ -876,7 +876,7 @@ class ReadmeTest(unittest.TestCase):
                      "tweet.read", "users.read", "bookmark.read", "offline.access", "fav auth app-token",
                      "spending limit"):
             self.assertIn(line, part)
-        # fav creates the config directory only when a command runs, after the file is needed.
+        # A new user writes config.toml before running fav, so nothing has made the directory yet.
         self.assertIn("mkdir -p -m 700 ~/.config/fav", part)
         self.assertIn("$XDG_CONFIG_HOME/fav", part)
         # Login prints the authorization URL; it does not open a browser itself.
@@ -947,7 +947,7 @@ ModuleNotFoundError: No module named 'fav'
 
 - **Intro.** It names the three questions an agent can now answer, and says, in those words, that fav is unofficial and not affiliated with X.
 - **Install.** It explains `X_ENVIRONMENT` (the error when SQLite lacks FTS5 or Python is older than 3.11).
-- **Set up your X app.** Take the console's labels (project, app, user authentication settings, app type, callback URI, spending limit) from X's developer documentation (`docs.x.com`) and cite the pages in the closing report. Before the user writes `config.toml`, give `mkdir -p -m 700 ~/.config/fav` and say the directory is `$XDG_CONFIG_HOME/fav` when that variable is set: fav creates its directories only when a command runs, and every command needs the file first. Say that `fav auth login` prints an authorization URL to open in a browser and takes the redirect on the callback URL or as a pasted URL; it opens no browser.
+- **Set up your X app.** Take the console's labels (project, app, user authentication settings, app type, callback URI, spending limit) from X's developer documentation (`docs.x.com`) and cite the pages in the closing report. Before the user writes `config.toml`, give `mkdir -p -m 700 ~/.config/fav` and say the directory is `$XDG_CONFIG_HOME/fav` when that variable is set: a new user writes the file before running any fav command, so the directory does not exist yet. Say that `fav auth login` prints an authorization URL to open in a browser and takes the redirect on the callback URL or as a pasted URL; it opens no browser.
 - **With an agent.** It links `skills/x-research/SKILL.md` relatively. Check the skills directory it names for Claude Code (`~/.claude/skills/`) and Codex against each tool's own documentation, and cite the pages. Where a CLI's documentation names no user skills directory, leave that CLI out rather than guessing.
 - **Commands.** The command table is wings-x's (`/home/jmo/linda/repos/x-runtime/README.md` and its spec), renamed.
 - **Spending.** The prices come from `fav/config.py`'s defaults.
