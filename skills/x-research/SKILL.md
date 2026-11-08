@@ -60,7 +60,7 @@ live X or from bookmarks.
 5. **Handle the other errors.** Errors print `<CODE>: <message>` on
    stderr (`{"error": …}` under `--json`) and exit 1.
    - `X_AUTH_REQUIRED`, `X_AUTH_EXPIRED`, `X_SCOPE_MISMATCH`: the user
-     runs `fav auth login` in their own terminal (it opens a browser).
+     runs `fav auth login` in their own terminal (it prints a URL to open in a browser).
    - `X_RATE_LIMITED`: report `retry_at`; do not loop.
    - `X_QUERY_INVALID`: fix the query once, then report.
    - `X_NOT_FOUND`, `X_PROTECTED`: the post or account is gone or

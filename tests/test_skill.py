@@ -42,9 +42,12 @@ class SkillTest(unittest.TestCase):
                         "brew install service-dept/tap/fav", "README"):
             self.assertIn(command, step)
 
-    def test_repeat_charge_wording(self):
+    def test_reworded_lines(self):
         self.assertIn("can be charged again", self.body)
         self.assertNotIn("pays again", self.body)
+        # fav auth login prints a URL; it does not open a browser.
+        self.assertIn("(it prints a URL to open in a browser)", self.body)
+        self.assertNotIn("opens a browser", self.body)
 
     def test_command_table(self):
         for command in ('fav bookmarks search "<words>"', "fav bookmarks list", 'fav search "<query>" --limit 10',

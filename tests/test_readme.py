@@ -43,7 +43,7 @@ class ReadmeTest(unittest.TestCase):
                      "tweet.read", "users.read", "bookmark.read", "offline.access", "fav auth app-token",
                      "spending limit"):
             self.assertIn(line, part)
-        # fav creates the config directory only when a command runs, after the file is needed.
+        # A new user writes config.toml before running fav, so nothing has made the directory yet.
         self.assertIn("mkdir -p -m 700 ~/.config/fav", part)
         self.assertIn("$XDG_CONFIG_HOME/fav", part)
         # Login prints the authorization URL; it does not open a browser itself.
