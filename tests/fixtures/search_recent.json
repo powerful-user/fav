@@ -1,0 +1,26 @@
+{
+  "data": [
+    {
+      "id": "1001",
+      "text": "Agent-first languages are coming",
+      "author_id": "42",
+      "created_at": "2026-10-01T10:00:00.000Z",
+      "conversation_id": "1001",
+      "lang": "en",
+      "public_metrics": {"like_count": 5, "retweet_count": 1, "reply_count": 2, "quote_count": 0},
+      "referenced_tweets": [{"type": "quoted", "id": "99"}]
+    },
+    {
+      "id": "1002",
+      "text": "Reply about MCP harnesses",
+      "author_id": "43",
+      "created_at": "2026-10-01T11:00:00.000Z",
+      "conversation_id": "900",
+      "lang": "en",
+      "public_metrics": {"like_count": 0, "retweet_count": 0, "reply_count": 0, "quote_count": 0},
+      "referenced_tweets": [{"type": "replied_to", "id": "900"}],
+      "attachments": {"media_keys": ["3_1"]}
+    }
+  ],
+  "meta": {"newest_id": "1002", "oldest_id": "1001", "result_count": 2, "next_token": "tok2"}
+}
