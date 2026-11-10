@@ -66,11 +66,11 @@ class PyprojectTest(unittest.TestCase):
         hook = self.hatch["metadata"]["hooks"]["fancy-pypi-readme"]
         self.assertEqual(hook["content-type"], "text/markdown")
         self.assertEqual(hook["fragments"], [{"path": "README.md"}])
-        text = "the [license](LICENSE) and [the skill](skills/x-research/SKILL.md)"
+        text = "the [license](LICENSE) and [the skill](skills/fav/SKILL.md)"
         for sub in hook["substitutions"]:
             text = re.sub(sub["pattern"], sub["replacement"], text)
         self.assertEqual(text, "the [license](%s/blob/main/LICENSE) and "
-                               "[the skill](%s/blob/main/skills/x-research/SKILL.md)" % (REPO, REPO))
+                               "[the skill](%s/blob/main/skills/fav/SKILL.md)" % (REPO, REPO))
 
 
 @source_tree_only
