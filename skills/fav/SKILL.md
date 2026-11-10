@@ -1,9 +1,9 @@
 ---
-name: x-research
+name: fav
 description: Use when a task needs posts, threads, users or bookmarks from X (Twitter), including a question about what someone said on X or what the user bookmarked there
 ---
 
-# x-research
+# fav
 
 ## Overview
 

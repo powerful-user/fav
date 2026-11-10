@@ -1,11 +1,11 @@
-"""skills/x-research, as the spec's section 4 describes it."""
+"""skills/fav, as the spec's section 4 describes it."""
 import os
 import re
 import unittest
 
 from tests.helpers import OLD_NAME, ROOT, source_tree_only
 
-SKILL = os.path.join(ROOT, "skills", "x-research")
+SKILL = os.path.join(ROOT, "skills", "fav")
 
 
 def read(*parts):
@@ -23,7 +23,7 @@ class SkillTest(unittest.TestCase):
         cls.body = cls.text[match.end():] if match else cls.text
 
     def test_frontmatter(self):
-        self.assertIn("name: x-research\n", self.front + "\n")
+        self.assertIn("name: fav\n", self.front + "\n")
         self.assertRegex(self.front, r"description: Use when a task needs posts, threads, users or bookmarks from X")
         self.assertIn("said", self.front)
         self.assertIn("bookmarked", self.front)
@@ -70,7 +70,7 @@ class ScenariosTest(unittest.TestCase):
     def test_scenarios(self):
         text = read("tests", "scenarios.md")
         for number in ("S123", "S124", "S125", "S126"):
-            self.assertIn("### %s: x-research: " % number, text)
+            self.assertIn("### %s: fav: " % number, text)
         s126 = text[text.index("### S126"):]
         self.assertIn("no `fav` on `PATH`", s126)
         setup = text[:text.index("### S123")]

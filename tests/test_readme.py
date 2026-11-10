@@ -60,7 +60,7 @@ class ReadmeTest(unittest.TestCase):
         part = self.part("With an agent")
         self.assertIn("git clone --depth 1 --branch v", part)
         self.assertIn("https://github.com/service-dept/fav", part)
-        self.assertIn("skills/x-research", part)
+        self.assertIn("skills/fav", part)
 
     def test_files_and_development(self):
         part = self.part("Files")

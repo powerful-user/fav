@@ -105,15 +105,15 @@ The figure fav prints is its own estimate. X documents that the same resource re
 
 ## With an agent
 
-The skill is not part of the PyPI package or the Homebrew formula. Get `skills/x-research` for the version you installed, from the git tag or from that release's source archive:
+The skill is not part of the PyPI package or the Homebrew formula. Get `skills/fav` for the version you installed, from the git tag or from that release's source archive:
 
 ```
 git clone --depth 1 --branch v<version> https://github.com/service-dept/fav
 ```
 
-The instructions are in [skills/x-research/SKILL.md](skills/x-research/SKILL.md). Copy or link that directory into the skills directory your agent reads.
+The instructions are in [skills/fav/SKILL.md](skills/fav/SKILL.md). Copy or link that directory into the skills directory your agent reads.
 
-Claude Code reads a personal skill from `~/.claude/skills/x-research/SKILL.md` ([Claude Code skills](https://code.claude.com/docs/en/skills)). Codex reads a personal skill from `$HOME/.agents/skills/x-research/SKILL.md` ([Codex skills](https://developers.openai.com/codex/skills)).
+Claude Code reads a personal skill from `~/.claude/skills/fav/SKILL.md` ([Claude Code skills](https://code.claude.com/docs/en/skills)). Codex reads a personal skill from `$HOME/.agents/skills/fav/SKILL.md` ([Codex skills](https://developers.openai.com/codex/skills)).
 
 ## Files
 
